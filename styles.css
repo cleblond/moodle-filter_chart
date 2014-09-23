@@ -1,0 +1,10 @@
+.ssheet_cont {
+width: 700px;
+height: 450px;
+/*float: left;*/
+display: inline-block;
+overflow-y:hidden;
+}
+
+
+
