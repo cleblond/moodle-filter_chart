@@ -36,7 +36,7 @@ $points = $DB->get_records('filter_chart_data', array('chartid'=>$id));
 
 
 //$res = mysql_query ($sql);
-
+print_r($points);
 		
 if($points){
 	foreach ($points as $point) {
@@ -44,8 +44,8 @@ if($points){
 		echo ("<row id='".$point->id."'>");
 		print("<cell><![CDATA[".$point->x1."]]></cell>");
 		print("<cell><![CDATA[".$point->y1."]]></cell>");
-//		print("<cell><![CDATA[".$result->x2."]]></cell>");
-//		print("<cell><![CDATA[".$result->y3."]]></cell>");
+		print("<cell><![CDATA[".$point->x2."]]></cell>");
+		print("<cell><![CDATA[".$point->y2."]]></cell>");
 		print("</row>");
         }
 }    
