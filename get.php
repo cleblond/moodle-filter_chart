@@ -10,7 +10,7 @@ if (!isset($CFG)) {
 
 global $CFG, $DB, $USER;
 require_once($CFG->libdir . '/filelib.php');
-
+$id  = optional_param('id', 0, PARAM_INT);
 
 error_reporting(E_ALL ^ E_NOTICE);
 

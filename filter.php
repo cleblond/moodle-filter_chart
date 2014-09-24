@@ -33,19 +33,21 @@ class filter_chart extends moodle_text_filter {
     public function filter($text, array $options = array()) {
         global $CFG, $USER;
         //$str = '<table>test</table><table class="chart someOtherClass">content</table>';
-        $search = '/<div.*?class="eo_chart".*?sheet="(.*?)".*?math="(.*?)".*?group="(.*?)".*?readonly="(.*?)".*?uid="(.*?)">(.*?)<\/div>/';
+        $search = '/<div.*?class="eo_chart".*?chart="(.*?)".*?type="(.*?)".*?group="(.*?)".*?readonly="(.*?)".*?uid="(.*?)">(.*?)<\/div>/';
         //$numofmatches = preg_match_all($search, $text, $matches);
         $id = 1;
 
         $newtext = preg_replace_callback($search, function($matches) use (&$id) {
-        global $CFG;    
-        
+        global $CFG, $DB;    
 
+        $result = $DB->get_record('filter_chart', array('id'=>$matches[1]));
+
+print_object($matches);
 $script = '<script>
 	var chart;
 	window.onload = function(){
 	chart =  new dhtmlXChart({
-		view:"scatter",
+		view:"'.$result->type.'",
                 //view:"bar",
 		color:"#66ccff",
 		//gradient:"3d",
@@ -102,7 +104,7 @@ $script = '<script>
 	mygrid.setSkin("dhx_skyblue")
 	mygrid.enableSmartRendering(true);
         mygrid.init();
-        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php",refresh_chart);
+        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'",refresh_chart);
 	//mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/gridH.xml",refresh_chart);
 	mygrid.attachEvent("onEditCell",function(stage){
 		if (stage == 2)
