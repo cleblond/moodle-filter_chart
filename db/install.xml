@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="filter/chart/db" VERSION="20140924" COMMENT="XMLDB file for Moodle filter/chart"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="filter_chart" COMMENT="Default comment for filter_chart, please edit me">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="filter_chart_data" COMMENT="filter_chart_data table retrofitted from MySQL">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="chartid" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="x1" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="y1" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="x2" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="y2" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="x3" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="y3" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="x4" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="y4" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="x5" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="y5" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
