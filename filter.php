@@ -112,7 +112,7 @@ $script = '<script>
 		return true;
 	});
 
-        myDataProcessor = new dataProcessor("'.$CFG->wwwroot.'/filter/chart/update_all.php"); //lock feed url
+        myDataProcessor = new dataProcessor("'.$CFG->wwwroot.'/filter/chart/update_all.php?chartid='.$matches[1].'"); //lock feed url
 	myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
 	myDataProcessor.setUpdateMode("off"); //disable auto-update
 	myDataProcessor.init(mygrid); //link dataprocessor to the grid

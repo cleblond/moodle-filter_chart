@@ -25,15 +25,16 @@ header("Content-type: text/xml");
 echo('<?xml version="1.0" encoding="utf-8"?>'); 
 
 //start output of data
+print_r($points[1]);
+print_r($points[2]);
 echo '<rows id="0">';
 
 //output data from DB as XML
 //$sql = "SELECT  * from filter_chart_data WHERE chartid=1";
 
-$points = $DB->get_records('filter_chart_data', array('chartid'=>1));
+$points = $DB->get_records('filter_chart_data', array('chartid'=>$id));
 
-print_r($points[1]);
-print_r($points[2]);
+
 //$res = mysql_query ($sql);
 
 		

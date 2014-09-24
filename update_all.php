@@ -1,14 +1,33 @@
 <?php
-//code below is simplified - in real app you will want to have some kins session based autorization and input value checking
+
+
+define('AJAX_SCRIPT', true);
+
+if (!isset($CFG)) {
+    require_once("../../config.php");
+}
+
+global $CFG, $DB, $USER;
+require_once($CFG->libdir . '/filelib.php');
+//$chartid  = optional_param('id', 0, PARAM_INT);
+
 error_reporting(E_ALL ^ E_NOTICE);
 
-//include db connection settings
-require_once('../../common/config.php');
-require_once('../../common/config_dp.php');
-
-function add_row($rowId){
-	global $newId;
+function add_row($rowId, $chartid){
+	global $newId, $DB;
 	
+
+
+		$record = new stdClass();
+		//$record->id = $id;
+		$record->chartid = $chartid;
+		$record->x1 = optional_param($rowId."_c0", 0, PARAM_TEXT);
+		$record->y1 = optional_param($rowId."_c1", 0, PARAM_TEXT);
+                $newid = $DB->insert_record('filter_chart_data', $record, true);
+
+
+/*
+
 	$sql = 	"INSERT INTO samples_grid(sales,title,author,price,instore,shipping,bestseller,pub_date)
 			VALUES ('".$_POST[$rowId."_c0"]."',
 					'".addslashes($_POST[$rowId."_c1"])."',
@@ -20,29 +39,49 @@ function add_row($rowId){
 					'".$_POST[$rowId."_c7"]."')";
 	$res = mysql_query($sql);
 	//set value to use in response
-	$newId = mysql_insert_id();
+	$newId = mysql_insert_id();  */
 	return "insert";	
 }
 
-function update_row($rowId){
-	$sql = 	"UPDATE samples_grid SET  sales='".$_POST[$rowId."_c0"]."',
-				title=		'".addslashes($_POST[$rowId."_c1"])."',
-				author=		'".addslashes($_POST[$rowId."_c2"])."',
-				price=		'".$_POST[$rowId."_c3"]."',
-				instore=	'".$_POST[$rowId."_c4"]."',
-				shipping=	'".$_POST[$rowId."_c5"]."',
-				bestseller=	'".$_POST[$rowId."_c6"]."',
-				pub_date=	'".$_POST[$rowId."_c7"]."' 
-			WHERE book_id=".$rowId;
-	$res = mysql_query($sql);
+function update_row($rowId, $chartid){
+                global $DB;
+
+		$record = new stdClass();
+		//$record->id = $id;
+                $record->id = $rowId;
+		$record->chartid = $chartid;
+		$record->x1 = optional_param($rowId."_c0", '', PARAM_TEXT);
+		$record->y1 = optional_param($rowId."_c1", '', PARAM_TEXT);
+	/*	$record->x2 = optional_param($rowId."_c0", '', PARAM_TEXT);
+		$record->y2 = optional_param($rowId."_c1", '', PARAM_TEXT);
+		$record->x3 = optional_param($rowId."_c0", '', PARAM_TEXT);
+		$record->y3 = optional_param($rowId."_c1", '', PARAM_TEXT);
+		$record->x4 = optional_param($rowId."_c0", '', PARAM_TEXT);
+		$record->y4 = optional_param($rowId."_c1", '', PARAM_TEXT);
+		$record->x5 = optional_param($rowId."_c0", '', PARAM_TEXT);
+		$record->y5 = optional_param($rowId."_c1", '', PARAM_TEXT); */
+                print_r($record);
+
+                //$DB->insert_record('filter_chart_data', $record, true);
+
+		if($DB->update_record('filter_chart_data', $record)){
+                ///success
+                } else {
+                //failure
+                echo "Database updated failed";
+                }
 	
 	return "update";	
 }
 
-function delete_row($rowId){
-	
-	$d_sql = "DELETE FROM samples_grid WHERE book_id=".$rowId;
-	$resDel = mysql_query($d_sql);
+function delete_row($rowId, $chartid){
+	global $DB;
+        //$record->id = $rowId;
+	//$record->chartid = $chartid;
+
+        $DB->delete_records('filter_chart_data', array('id'=>$rowId, 'chartid'=>$chartid));
+	//$d_sql = "DELETE FROM samples_grid WHERE book_id=".$rowId;
+	//$resDel = mysql_query($d_sql);
 	return "delete";
 }
 
@@ -50,30 +89,37 @@ function delete_row($rowId){
 //include XML Header (as response will be in xml format)
 header("Content-type: text/xml");
 //encoding may differ in your case
-echo('<?xml version="1.0" encoding="iso-8859-1"?>'); 
+echo('<?xml version="1.0" encoding="utf-8"?>');
 //output update results
 echo "<data>";
 
-
-$ids = explode(",",$_POST["ids"]);
+$ids  = optional_param('ids', '', PARAM_TEXT);
+$chartid  = optional_param('chartid', 0, PARAM_INT);
+//echo "chartid=$chartid";
+$ids = explode("," , $ids);
+//$ids = explode(",",$_POST["ids"]);
 //for each row
-for ($i=0; $i < sizeof($ids); $i++) { 
-	$rowId = $ids[$i]; //id or row which was updated 
-	$newId = $rowId; //will be used for insert operation	
-	$mode = $_POST[$rowId."_!nativeeditor_status"]; //get request mode
+//echo "ids=".print_r($ids);
 
+for ($i=0; $i < sizeof($ids); $i++) { 
+	$rowId = $ids[$i]; //id or row which was updated
+        echo "rowId=".$rowId;
+	$newId = $rowId; //will be used for insert operation	
+	//$mode = $_POST[$rowId."_!nativeeditor_status"]; //get request mode
+        $mode = optional_param($rowId."_!nativeeditor_status", 0, PARAM_TEXT);
+        //echo "mode=$mode";
 	switch($mode){
 		case "inserted":
 			//row adding request
-			$action = add_row($rowId);
+			$action = add_row($rowId, $chartid);
 		break;
 		case "deleted":
 			//row deleting request
-			$action = delete_row($rowId);
+			$action = delete_row($rowId, $chartid);
 		break;
 		default:
 			//row updating request
-			$action = update_row($rowId);
+			$action = update_row($rowId, $chartid);
 		break;
 	}	
 	echo "<action type='".$action."' sid='".$rowId."' tid='".$newId."'/>";
