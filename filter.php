@@ -40,7 +40,7 @@ class filter_chart extends moodle_text_filter {
         $newtext = preg_replace_callback($search, function($matches) use (&$id) {
         global $CFG, $DB;    
 
-        $result = $DB->get_record('filter_chart', array('id'=>$matches[1]));
+        $result = $DB->get_record('filter_chart_users', array('id'=>$matches[1]));
 
 print_object($matches);
 $script = '<script>
@@ -103,6 +103,8 @@ $script = '<script>
 	mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
 	mygrid.setSkin("dhx_skyblue")
 	mygrid.enableSmartRendering(true);
+        //mygrid.setMathRound(2);
+        //mygrid.enableMathEditing(true); 
         mygrid.init();
         mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'",refresh_chart);
 	//mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/gridH.xml",refresh_chart);
