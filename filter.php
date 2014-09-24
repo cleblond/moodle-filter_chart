@@ -45,32 +45,48 @@ $script = '<script>
 	var chart;
 	window.onload = function(){
 	chart =  new dhtmlXChart({
-		view:"bar",
+		view:"scatter",
+                //view:"bar",
 		color:"#66ccff",
-		gradient:"3d",
+		//gradient:"3d",
 		container:"chart_container",
-	        value:"#data0#",
-		label:"#data0#",
-		radius:3,
-		tooltip:{
-			template:"#data0#"
-		},
-		width:50,
-		origin:0,
-		yAxis:{
-			start:-1000,
-			step: 500,
-			end:2000	
-		},
-		group:{
-			by:"#data2#",
-			map:{
-				data0:["#data0#","sum"]
-			}
-		},
-		xAxis:{
-			template:"#id#"
-		},
+                xValue: "#data0#",
+	        value:"#data1#",
+		//label:"#data0#",
+                yAxis:{
+                title:"Value B"
+                },
+                xAxis:{
+                title:"Value A"
+                },
+	        item:{
+                   radius:5,
+                   borderColor:"#f38f00",
+                   borderWidth:1,
+                   color:"#ff9600",
+                   type:"d",
+                   shadow:true
+                },
+                tooltip:{
+                  template:"(#data0# , #data1#)"
+                },
+		//radius:3,
+		//width:50,
+		//origin:0,
+		//yAxis:{
+		//	start:-1000,
+		//	step: 500,
+		//	end:2000	
+		//},
+		//group:{
+		//	by:"#data2#",
+		//	map:{
+		//		data0:["#data0#","sum"]
+		//	}
+		//},
+		//xAxis:{
+		//	template:"#id#"
+		//},
 		border:false
 	});
 	
@@ -80,26 +96,42 @@ $script = '<script>
 	};
 	
 	mygrid = new dhtmlXGridObject(\'gridbox\');
-	mygrid.setImagePath(\'../../../codebase/imgs/\');
+        mygrid.setHeader("X,Y");
+        mygrid.setInitWidths("75,75")
+	mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
 	mygrid.setSkin("dhx_skyblue")
 	mygrid.enableSmartRendering(true);
-	mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/gridH.xml",refresh_chart);
+        mygrid.init();
+        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php",refresh_chart);
+	//mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/gridH.xml",refresh_chart);
 	mygrid.attachEvent("onEditCell",function(stage){
 		if (stage == 2)
 			refresh_chart();
 		return true;
 	});
+
+        myDataProcessor = new dataProcessor("'.$CFG->wwwroot.'/filter/chart/update_all.php"); //lock feed url
+	myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
+	myDataProcessor.setUpdateMode("off"); //disable auto-update
+	myDataProcessor.init(mygrid); //link dataprocessor to the grid
+
+
+
+
     }
 </script>
 	<div id="chart_container" style="width:600px;height:300px;"></div>
 	<div id="gridbox" style="width:600px; height:170px; background-color:white;"></div>
+
+       <p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[0,\'\',\'\',\'\',false,\'na\',false,\'\'],mygrid.getRowIndex(mygrid.getSelectedId()))">Add row</a></p>
+				<p><a href="javascript:void(0)" onclick="mygrid.deleteSelectedItem()">Remove Selected Row</a></p>
+				<input type="button" name="some_name" value="update" onclick="myDataProcessor.sendData();">
+
+
+
+
+
 ';
-
-
-
-
-
-
 
             return $script;
         }, $text, -1, $count);
