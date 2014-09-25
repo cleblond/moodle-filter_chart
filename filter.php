@@ -41,25 +41,38 @@ class filter_chart extends moodle_text_filter {
         global $CFG, $DB;    
 
         $result = $DB->get_record('filter_chart_users', array('id'=>$matches[1]));
+        //echo $result->type;
 
-print_object($matches);
+
+        //Take care of pie type graphs.
+        $pietypes = array("pie", "pie3D", "donut");
+        if(in_array($result->type, $pietypes)){
+        $pietype = "pie";
+        }
+
+
+        print_object($matches);
 $script = '<script>
 	var chart;
 	window.onload = function(){
-	chart =  new dhtmlXChart({
+
+
+	chartbar =  new dhtmlXChart({
 		view:"'.$result->type.'",
                 //view:"bar",
-		color:"#66ccff",
+		color:"#data2#",
+                gradient:"rising",
 		//gradient:"3d",
 		container:"chart_container",
-                xValue: "#data0#",
+                //xValue: "#data0#",
 	        value:"#data1#",
-		//label:"#data0#",
+		label:"#data0#",  //Bar only
                 yAxis:{
-                title:"Value B"
+                title:"'.$result->yaxistitle.'"
                 },
                 xAxis:{
-                title:"Value A"
+                title:"'.$result->xaxistitle.'",
+                template:"#data0#"
                 },
 	        item:{
                    radius:5,
@@ -72,37 +85,138 @@ $script = '<script>
                 tooltip:{
                   template:"(#data0# , #data1#)"
                 },
-		//radius:3,
-		//width:50,
-		//origin:0,
-		//yAxis:{
-		//	start:-1000,
-		//	step: 500,
-		//	end:2000	
-		//},
-		//group:{
-		//	by:"#data2#",
-		//	map:{
-		//		data0:["#data0#","sum"]
-		//	}
-		//},
-		//xAxis:{
-		//	template:"#id#"
-		//},
 		border:false
 	});
-	
-	function refresh_chart(){
-		chart.clearAll();
-		chart.parse(mygrid,"dhtmlxgrid");
+
+        chartpie =  new dhtmlXChart({
+            view:"'.$result->type.'",
+            container:"chart_container",
+            value:"#data1#",
+            color:"#data2#",
+            tooltip:"#data1#",
+            label:"#data0#",
+            shadow:0,
+            radius:65,
+            x:280,
+            y:120
+        });
+
+	chartscatter =  new dhtmlXChart({
+		view:"scatter",
+                //view:"bar",
+		color:"#66ccff",
+		//gradient:"3d",
+		container:"chart_container",
+                xValue: "#data0#",
+	        value:"#data1#",
+		//label:"#data0#",  //Bar only
+                yAxis:{
+                title:"'.$result->yaxistitle.'"
+                },
+                xAxis:{
+                title:"'.$result->xaxistitle.'"
+                },
+	        item:{
+                   radius:5,
+                   borderColor:"#f38f00",
+                   borderWidth:1,
+                   color:"#ff9600",
+                   type:"d",
+                   shadow:true
+                },
+                tooltip:{
+                  template:"(#data0# , #data1#)"
+                },
+		border:false
+	});
+        
+
+
+
+
+
+        function refresh_chart(){
+		charttype.clearAll();
+		charttype.parse(mygrid,"dhtmlxgrid");
 	};
 	
+
+        function doOnColorChanged(stage,rId,cIn){
+		if(stage==2){
+			if(cIn==2){
+				mygrid.cells(rId,3).setValue(mygrid.cells(rId,2).getValue())
+			}else if(cIn==3){
+				mygrid.cells(rId,2).setValue(mygrid.cells(rId,3).getValue())
+			}
+		}
+		return true;
+	}
+
+
+
+
+        if (\''.$result->type.'\' === \'scatter\') {
+		//alert("scatter chart");
+		//must be scatter
+	var charttype = chartscatter;
+
 	mygrid = new dhtmlXGridObject(\'gridbox\');
-        mygrid.setHeader("X1,Y1,X2,Y2,X3,Y3,X4,Y4,X5,Y5");
+        mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
         mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75")
 	mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
 	mygrid.setSkin("dhx_skyblue")
 	mygrid.enableSmartRendering(true);
+
+        mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
+	mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int")
+
+
+
+
+
+        } else if (\''.$result->type.'\' === \'bar\') {
+  	      //alert("bar chart");
+		//must be bar
+        var charttype = chartbar;
+
+	mygrid = new dhtmlXGridObject(\'gridbox\');
+        mygrid.setHeader("Bar Label,Bar Value, Color Code, Color");
+        mygrid.setInitWidths("75, 75, 75, 75")
+	mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.enableSmartRendering(true);
+	mygrid.attachEvent("onEditCell",doOnColorChanged);
+        mygrid.setColTypes("ed,ed,ed,cp");
+	mygrid.setColSorting("str,str,str,str")
+
+
+        } else if (\''.$pietype.'\' === \'pie\') {
+        var charttype = chartpie;
+
+	mygrid = new dhtmlXGridObject(\'gridbox\');
+        mygrid.setHeader("Slice Label,Slice Value, Color Code, Color");
+        mygrid.setInitWidths("75, 75, 75, 75")
+	mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.enableSmartRendering(true);
+	mygrid.attachEvent("onEditCell",doOnColorChanged);
+        mygrid.setColTypes("ed,ed,ed,cp");
+	mygrid.setColSorting("str,str,str,str")
+
+        }
+
+	
+	//mygrid = new dhtmlXGridObject(\'gridbox\');
+        //mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
+        //mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75")
+	//mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+	//mygrid.setSkin("dhx_skyblue")
+	//mygrid.enableSmartRendering(true);
+
+        //mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
+	//mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int")
+
+
         //mygrid.setMathRound(2);
         //mygrid.enableMathEditing(true); 
         mygrid.init();
@@ -114,20 +228,16 @@ $script = '<script>
 		return true;
 	});
 
-        myDataProcessor = new dataProcessor("'.$CFG->wwwroot.'/filter/chart/update_all.php?chartid='.$matches[1].'"); //lock feed url
+        myDataProcessor = new dataProcessor("'.$CFG->wwwroot.'/filter/chart/update.php?chartid='.$matches[1].'"); //lock feed url
 	myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
 	myDataProcessor.setUpdateMode("off"); //disable auto-update
 	myDataProcessor.init(mygrid); //link dataprocessor to the grid
-
-
-
-
     }
 </script>
 	<div id="chart_container" style="width:600px;height:300px;"></div>
 	<div id="gridbox" style="width:600px; height:170px; background-color:white;"></div>
 
-       <p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[0,\'\',\'\',\'\',false,\'na\',false,\'\'],mygrid.getRowIndex(mygrid.getSelectedId()))">Add row</a></p>
+       <p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\'],mygrid.getRowIndex(mygrid.getSelectedId()))">Add row</a></p>
 				<p><a href="javascript:void(0)" onclick="mygrid.deleteSelectedItem()">Remove Selected Row</a></p>
 				<input type="button" name="some_name" value="update" onclick="myDataProcessor.sendData();">
 
