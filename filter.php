@@ -46,16 +46,59 @@ class filter_chart extends moodle_text_filter {
 
         //Take care of pie type graphs.
         $pietypes = array("pie", "pie3D", "donut");
+        $bartype='';
+        $pietype='';
+        $linetype='';
         if(in_array($result->type, $pietypes)){
         $pietype = "pie";
         }
+        $bartypes = array("bar", "barH");
+        if(in_array($result->type, $bartypes)){
+        $bartype = "bar";
+        }
+        $linetypes = array("line", "spline");
+        if(in_array($result->type, $linetypes)){
+        $linetype = "line";
+        }
 
 
-        print_object($matches);
+        //print_object($matches);
 $script = '<script>
 	var chart;
 	window.onload = function(){
 
+
+	chartbarh =  new dhtmlXChart({
+		view:"'.$result->type.'",
+                //view:"bar",
+		color:"#data2#",
+                gradient:"rising",
+		//gradient:"3d",
+		container:"chart_container",
+                //xValue: "#data0#",
+	        value:"#data1#",
+		label:"#data1#",  //Bar only
+                yAxis:{
+                template:"#data0#",
+                title:"'.$result->yaxistitle.'"
+                },
+                xAxis:{
+                title:"'.$result->xaxistitle.'",
+                template:"#data0#"
+                },
+	        item:{
+                   radius:5,
+                   borderColor:"#f38f00",
+                   borderWidth:1,
+                   color:"#ff9600",
+                   type:"d",
+                   shadow:true
+                },
+                tooltip:{
+                  template:"(#data0# , #data1#)"
+                },
+		border:false
+	});
 
 	chartbar =  new dhtmlXChart({
 		view:"'.$result->type.'",
@@ -130,7 +173,34 @@ $script = '<script>
 		border:false
 	});
         
-
+	chartline =  new dhtmlXChart({
+		view:"'.$result->type.'",
+                //view:"bar",
+		color:"#66ccff",
+		//gradient:"3d",
+		container:"chart_container",
+                xValue: "#data0#",
+	        value:"#data1#",
+		//label:"#data0#",  //Bar only
+                yAxis:{
+                title:"'.$result->yaxistitle.'"
+                },
+                xAxis:{
+                title:"'.$result->xaxistitle.'"
+                },
+	        item:{
+                   radius:5,
+                   borderColor:"#f38f00",
+                   borderWidth:1,
+                   color:"#ff9600",
+                   type:"d",
+                   shadow:true
+                },
+                tooltip:{
+                  template:"(#data0# , #data1#)"
+                },
+		border:false
+	});
 
 
 
@@ -174,10 +244,10 @@ $script = '<script>
 
 
 
-        } else if (\''.$result->type.'\' === \'bar\') {
-  	      //alert("bar chart");
+        } else if (\''.$bartype.'\' === \'bar\') {
+  	      alert("bar chart");
 		//must be bar
-        var charttype = chartbar;
+        if (\''.$result->type.'\' === \'barH\') {var charttype = chartbarh}else{charttype = chartbar;}
 
 	mygrid = new dhtmlXGridObject(\'gridbox\');
         mygrid.setHeader("Bar Label,Bar Value, Color Code, Color");
@@ -203,22 +273,30 @@ $script = '<script>
         mygrid.setColTypes("ed,ed,ed,cp");
 	mygrid.setColSorting("str,str,str,str")
 
+        } else if (\''.$linetype.'\' === \'line\') {
+		//alert("scatter chart");
+		//must be scatter
+	var charttype = chartline;
+
+	mygrid = new dhtmlXGridObject(\'gridbox\');
+        mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
+        mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75")
+	mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+	mygrid.setSkin("dhx_skyblue")
+	mygrid.enableSmartRendering(true);
+
+        mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
+	mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int")
+
+
+
+
+
         }
 
-	
-	//mygrid = new dhtmlXGridObject(\'gridbox\');
-        //mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
-        //mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75")
-	//mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
-	//mygrid.setSkin("dhx_skyblue")
-	//mygrid.enableSmartRendering(true);
-
-        //mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
-	//mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int")
 
 
-        //mygrid.setMathRound(2);
-        //mygrid.enableMathEditing(true); 
+
         mygrid.init();
         mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'",refresh_chart);
 	//mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/gridH.xml",refresh_chart);
@@ -235,6 +313,7 @@ $script = '<script>
     }
 </script>
 	<div id="chart_container" style="width:600px;height:300px;"></div>
+        <input type="text" name="title" value="Chart Tiele">
 	<div id="gridbox" style="width:600px; height:170px; background-color:white;"></div>
 
        <p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\'],mygrid.getRowIndex(mygrid.getSelectedId()))">Add row</a></p>

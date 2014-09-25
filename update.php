@@ -13,6 +13,9 @@ require_once($CFG->libdir . '/filelib.php');
 
 error_reporting(E_ALL ^ E_NOTICE);
 
+$title = optional_param("title", 0, PARAM_TEXT);
+echo "title=$title";
+
 function add_row($rowId, $chartid){
 	global $newId, $DB;
 	
