@@ -73,7 +73,7 @@ $script = '
         <tr><td style="text-align: center;"><b>'.$result->title.'</b></td></tr>
         <tr><td><div id="chart_container" style="width:600px;height:300px;"></div></td></tr></table>
         <div '.$hidediv.'>
-        <button id="toggle" class="yui3-button">Toggle</button>
+        <button id="toggle" >Show/Hide</button>
         <div id="chartoptions" >
         <table>
         
