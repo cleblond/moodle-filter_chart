@@ -62,13 +62,16 @@ class filter_chart extends moodle_text_filter {
         }
 
 
-        //print_object($matches);
+        print_object($matches);
 $script = '
-        <div id="chart_container" style="width:600px;height:300px;"></div>
-        <div id="myform_container" style="width:600px;"></div>
-        <div id="gridboxdata" style="width:600px; height:170px; background-color:white; float:left;"></div>
+        <table>
+        <tr><td><div id="chart_container" style="width:600px;height:300px;"></div></td></tr>
+        <tr><td><div id="gridboxuser" style="width:600px; height:60px; background-color:white; float:left;"></div></td></tr>
+        <tr><td><div id="gridboxdata" style="width:600px; height:170px; background-color:white; float:left;"></div></td></tr>
+        </table>
+
         <script>
-        var chart;
+        var charttype;
         window.onload = function(){
 
 
@@ -212,6 +215,7 @@ $script = '
         function refresh_chart(){
                 charttype.clearAll();
                 charttype.parse(mygrid,"dhtmlxgrid");
+                //console.log(charttype.parse(mygrid,"dhtmlxgrid"));
         };
         
 
@@ -310,49 +314,80 @@ $script = '
                 return true;
         });
 
-/*
+
         ///Form grid
-        myformgrid = new dhtmlXGridObject(\'gridboxuser\');
+        var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
         myformgrid.setHeader("Type,Title,x-axis Title,y-axis Title");
         myformgrid.setInitWidths("75,75,150,150")
         myformgrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
         myformgrid.setSkin("dhx_skyblue")
         myformgrid.enableSmartRendering(true);
 
-        myformgrid.setColTypes("ed,ed,ed,ed");
+        myformgrid.setColTypes("coro,ed,ed,ed");
         myformgrid.setColSorting("int,int,int,int")
         myformgrid.init();
         myformgrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=user",refresh_chart);
-*/
+
+        //xtit = myformgrid.cells2(0,0).getValue();
+        //                alert(xtit);
+       
+        myformgrid.attachEvent("onEditCell",function(stage){
+                if (stage == 2) {
+                        //charttype.parse(myformgrid,"dhtmlxgrid");
+                        xtit = myformgrid.cells2(0,2).getValue();
+                        //alert(xtit);
+
+			//chart.clearAll();
+			//chart.load("/data/test.json","json");
+			//setTimeout(refreshchart,60000);   
+
+			charttype.update({
+			    xAxis:{title: xtit}
+			});
+
+
+                        //xtit = charttype.update(123, { text:"abc", value:22 });
+                        //alert(charttype.parse(myformgrid,"dhtmlxgrid"));
+                        refresh_chart();
+                }
+                return true;
+        });
 
 
         myDataProcessor = new dataProcessor("'.$CFG->wwwroot.'/filter/chart/update.php?chartid='.$matches[1].'"); //lock feed url
         myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
         myDataProcessor.setUpdateMode("off"); //disable auto-update
         myDataProcessor.init(mygrid); //link dataprocessor to the grid
+
+        myDataProcessorFG = new dataProcessor("'.$CFG->wwwroot.'/filter/chart/updateform.php?chartid='.$matches[1].'"); //lock feed url
+        myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
+        myDataProcessorFG.setUpdateMode("off"); //disable auto-update
+        myDataProcessorFG.init(myformgrid); //link dataprocessor to the grid
+
+
     }
 
 
 
-
+/*
          formData = [
 {type: "settings", position: "label-top"},
-                {type: "block", width: 900, list:[
-                        {type: "input",  name:"type",   label: "Type"},
-{type: "newcolumn"},
-                        {type: "input",  name:"title",label: "Title"},
-{type: "newcolumn"},
-                        {type: "input",  name:"xaxistitle",   label: "X-axis"},
-{type: "newcolumn"},
-                        {type: "input",  name:"Yaxistitle",   label: "Y-axis"},
-{type: "newcolumn"},
-                        {type: "button", name:"save",    value:"Submit",    offsetTop:18}
+                {type: "block", width: 600, list:[
+                        {type: "input",  name:"type",   label: "Type", inputWidth: 50},
+{type: "newcolumn", offset:20},
+                        {type: "input",  name:"title",label: "Title", inputWidth: 150},
+{type: "newcolumn", offset:20},
+                        {type: "input",  name:"xaxistitle",   label: "X-axis label", inputWidth: 75},
+{type: "newcolumn", offset:20},
+                        {type: "input",  name:"yaxistitle",   label: "Y-axis Label", inputWidth: 75},
+{type: "newcolumn", offset:20},
+                        {type: "button", name:"save",    value:"Submit",    offsetTop:35}
                 ]}
         ];  
 
         var myform = new dhtmlXForm("myform_container",formData);        //initializes dhtmlxForm. Object constructor
-        //myform.bind(myformgrid);                                             //binds the form to the grid
- 
+        myform.bind(myformgrid);                                             //binds the form to the grid
+*/
        
 
 </script>
@@ -361,7 +396,7 @@ $script = '
 
        <p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\'],mygrid.getRowIndex(mygrid.getSelectedId()))">Add row</a></p>
                                 <p><a href="javascript:void(0)" onclick="mygrid.deleteSelectedItem()">Remove Selected Row</a></p>
-                                <input type="button" name="some_name" value="update" onclick="myDataProcessor.sendData();">
+                                <input type="button" name="some_name" value="update" onclick="myDataProcessor.sendData();myDataProcessorFG.sendData();">
 
 
 
