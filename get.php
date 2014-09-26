@@ -34,34 +34,34 @@ echo '<rows id="0">';
 //$sql = "SELECT  * from filter_chart_data WHERE chartid=1";
 
 if ($grid == 'data') {
-	$points = $DB->get_records('filter_chart_data', array('chartid'=>$id));
-	//$res = mysql_query ($sql);
+        $points = $DB->get_records('filter_chart_data', array('chartid'=>$id));
+        //$res = mysql_query ($sql);
 
-	if($points){
-		foreach ($points as $point) {
-			//create xml tag for grid's row
-			echo ("<row id='".$point->id."'>");
-			print("<cell><![CDATA[".$point->x1."]]></cell>");
-			print("<cell><![CDATA[".$point->y1."]]></cell>");
-			print("<cell><![CDATA[".$point->x2."]]></cell>");
-			print("<cell><![CDATA[".$point->y2."]]></cell>");
-			print("<cell><![CDATA[".$point->x3."]]></cell>");
-			print("<cell><![CDATA[".$point->y3."]]></cell>");
-			print("<cell><![CDATA[".$point->x4."]]></cell>");
-			print("<cell><![CDATA[".$point->y4."]]></cell>");
-			print("<cell><![CDATA[".$point->x5."]]></cell>");
-			print("<cell><![CDATA[".$point->y5."]]></cell>");
-			print("</row>");
-		}
-	}
+        if($points){
+                foreach ($points as $point) {
+                        //create xml tag for grid's row
+                        echo ("<row id='".$point->id."'>");
+                        print("<cell><![CDATA[".$point->x1."]]></cell>");
+                        print("<cell><![CDATA[".$point->y1."]]></cell>");
+                        print("<cell><![CDATA[".$point->x2."]]></cell>");
+                        print("<cell><![CDATA[".$point->y2."]]></cell>");
+                        print("<cell><![CDATA[".$point->x3."]]></cell>");
+                        print("<cell><![CDATA[".$point->y3."]]></cell>");
+                        print("<cell><![CDATA[".$point->x4."]]></cell>");
+                        print("<cell><![CDATA[".$point->y4."]]></cell>");
+                        print("<cell><![CDATA[".$point->x5."]]></cell>");
+                        print("<cell><![CDATA[".$point->y5."]]></cell>");
+                        print("</row>");
+                }
+        }
 } else {
-	$points = $DB->get_records('filter_chart_users', array('id'=>$id));
-	//$res = mysql_query ($sql);
-	//print_r($points);
-		
+        $points = $DB->get_records('filter_chart_users', array('id'=>$id));
+        //$res = mysql_query ($sql);
+        //print_r($points);
+                
 
- 		echo ('<head>');
-		echo ('<column type="co"> Chart type');
+                 echo ('<head>');
+                echo ('<column type="co"> Chart type');
             echo ('<option value="scatter"> scatter </option>');
             echo ('<option value="line"> line </option>');
             echo ('<option value="spline"> spline </option>');
@@ -80,17 +80,17 @@ if ($grid == 'data') {
 echo ('</head>');
 
 
-	if($points){
-		foreach ($points as $point) {
-			//create xml tag for grid's row
-			echo ("<row id='".$point->id."'>");
+        if($points){
+                foreach ($points as $point) {
+                        //create xml tag for grid's row
+                        echo ("<row id='".$point->id."'>");
                         print("<cell><![CDATA[".$point->type."]]></cell>");
-			print("<cell><![CDATA[".$point->title."]]></cell>");
-			print("<cell><![CDATA[".$point->xaxistitle."]]></cell>");
-			print("<cell><![CDATA[".$point->yaxistitle."]]></cell>");
-			print("</row>");
-		}
-	}
+                        print("<cell><![CDATA[".$point->title."]]></cell>");
+                        print("<cell><![CDATA[".$point->xaxistitle."]]></cell>");
+                        print("<cell><![CDATA[".$point->yaxistitle."]]></cell>");
+                        print("</row>");
+                }
+        }
 
 
 
@@ -98,7 +98,7 @@ echo ('</head>');
 
 //}else{
 //error occurs
-//	echo mysql_errno().": ".mysql_error()." at ".__LINE__." line in ".__FILE__." file<br>";
+//        echo mysql_errno().": ".mysql_error()." at ".__LINE__." line in ".__FILE__." file<br>";
 //}
 
 echo '</rows>';

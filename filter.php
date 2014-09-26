@@ -38,11 +38,16 @@ class filter_chart extends moodle_text_filter {
         $id = 1;
 
         $newtext = preg_replace_callback($search, function($matches) use (&$id) {
-        global $CFG, $DB;    
+        global $CFG, $DB, $USER;    
 
         $result = $DB->get_record('filter_chart_users', array('id'=>$matches[1]));
-        //echo $result->type;
-
+        //pritn_r($result);
+        //echo $USER->id . $result->userid;
+        $hidediv = '';
+        if ($USER->id !== $result->userid) {
+        ///don't allow editing and hide the options and data grids
+        $hidediv = 'style="display: none;"';
+        }
 
         //Take care of pie type graphs.
         $pietypes = array("pie", "pie3D", "donut");
@@ -62,14 +67,40 @@ class filter_chart extends moodle_text_filter {
         }
 
 
-        print_object($matches);
+        //print_object($matches);
 $script = '
         <table>
-        <tr><td><div id="chart_container" style="width:600px;height:300px;"></div></td></tr>
+        <tr><td style="text-align: center;"><b>'.$result->title.'</b></td></tr>
+        <tr><td><div id="chart_container" style="width:600px;height:300px;"></div></td></tr></table>
+        <div '.$hidediv.'>
+        <button id="toggle" class="yui3-button">Toggle</button>
+        <div id="chartoptions" >
+        <table>
+        
         <tr><td><div id="gridboxuser" style="width:600px; height:60px; background-color:white; float:left;"></div></td></tr>
         <tr><td><div id="gridboxdata" style="width:600px; height:170px; background-color:white; float:left;"></div></td></tr>
         </table>
+        <p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\'],mygrid.getRowIndex(mygrid.getSelectedId())+1)">Add row</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="mygrid.deleteSelectedItem()">Remove Selected Row</a></p>
+        <input type="button" name="some_name" value="update" onclick="myDataProcessor.sendData();myDataProcessorFG.sendData();">
+        </div>
+        </div>
+	<script type="text/javascript">
+	YUI().use(\'node\', function(Y) {
+	    Y.delegate(\'click\', function(e) {
+		var buttonID = e.currentTarget.get(\'id\'),
+		    node = Y.one(\'#chartoptions\');
+		    
+		if (buttonID === \'show\') {
+		    node.show();
+		} else if (buttonID === \'hide\') {
+		    node.hide();
+		} else if (buttonID === \'toggle\') {
+		    node.toggleView();
+		}
 
+	    }, document, \'button\');
+	});
+	</script>
         <script>
         var charttype;
         window.onload = function(){
@@ -91,7 +122,11 @@ $script = '
                 },
                 xAxis:{
                 title:"'.$result->xaxistitle.'",
-                template:"#data0#"
+                //template:"#data0#"
+                template:function(obj){
+                    return (obj%20?"":obj)
+                }
+
                 },
                 item:{
                    radius:5,
@@ -164,7 +199,7 @@ $script = '
                 title:"'.$result->yaxistitle.'"
                 },
                 xAxis:{
-                title:"'.$result->xaxistitle.'"
+                title:"'.$result->xaxistitle.'",
                 },
                 item:{
                    radius:5,
@@ -193,7 +228,11 @@ $script = '
                 title:"'.$result->yaxistitle.'"
                 },
                 xAxis:{
-                title:"'.$result->xaxistitle.'"
+                title:"'.$result->xaxistitle.'",
+                template:"#data0#"
+                //template:function(obj){
+                //    return (obj%20?"":obj)
+                //}
                 },
                 item:{
                    radius:5,
@@ -241,9 +280,9 @@ $script = '
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
         mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
         mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75")
-        mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
-        mygrid.setSkin("dhx_skyblue")
-        mygrid.enableSmartRendering(true);
+    //    mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+    //    mygrid.setSkin("dhx_skyblue")
+    //    mygrid.enableSmartRendering(true);
 
         mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
         mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int")
@@ -260,9 +299,9 @@ $script = '
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
         mygrid.setHeader("Bar Label,Bar Value, Color Code, Color");
         mygrid.setInitWidths("75, 75, 75, 75")
-        mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
-        mygrid.setSkin("dhx_skyblue")
-        mygrid.enableSmartRendering(true);
+    //    mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+    //    mygrid.setSkin("dhx_skyblue")
+    //    mygrid.enableSmartRendering(true);
         mygrid.attachEvent("onEditCell",doOnColorChanged);
         mygrid.setColTypes("ed,ed,ed,cp");
         mygrid.setColSorting("str,str,str,str")
@@ -274,9 +313,7 @@ $script = '
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
         mygrid.setHeader("Slice Label,Slice Value, Color Code, Color");
         mygrid.setInitWidths("75, 75, 75, 75")
-        mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
-        mygrid.setSkin("dhx_skyblue")
-        mygrid.enableSmartRendering(true);
+
         mygrid.attachEvent("onEditCell",doOnColorChanged);
         mygrid.setColTypes("ed,ed,ed,cp");
         mygrid.setColSorting("str,str,str,str")
@@ -289,21 +326,21 @@ $script = '
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
         mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
         mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75")
+     //   mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+     //   mygrid.setSkin("dhx_skyblue")
+     //   mygrid.enableSmartRendering(true);
+
+        mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
+        mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int")
+        }
+
         mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
         mygrid.setSkin("dhx_skyblue")
         mygrid.enableSmartRendering(true);
 
-        mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
-        mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int")
-
-
-
-
-
-        }
-
-
-
+        mygrid.enableMultiselect(true);
+        mygrid.enableBlockSelection(true);
+        mygrid.forceLabelSelection(true);
 
         mygrid.init();
         mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",refresh_chart);
@@ -315,7 +352,7 @@ $script = '
         });
 
 
-        ///Form grid
+        //OPtions grid.
         var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
         myformgrid.setHeader("Type,Title,x-axis Title,y-axis Title");
         myformgrid.setInitWidths("75,75,150,150")
@@ -327,32 +364,29 @@ $script = '
         myformgrid.setColSorting("int,int,int,int")
         myformgrid.init();
         myformgrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=user",refresh_chart);
-
-        //xtit = myformgrid.cells2(0,0).getValue();
-        //                alert(xtit);
        
         myformgrid.attachEvent("onEditCell",function(stage){
                 if (stage == 2) {
                         //charttype.parse(myformgrid,"dhtmlxgrid");
                         xtit = myformgrid.cells2(0,2).getValue();
                         //alert(xtit);
-
+                        console.log(charttype);
+                        console.log(charttype._configXAxis.title);
 			//chart.clearAll();
 			//chart.load("/data/test.json","json");
 			//setTimeout(refreshchart,60000);   
-
-			charttype.update({
-			    xAxis:{title: xtit}
-			});
-
+			charttype._configXAxis.title = "NEW AXIS TITLE";
+                        //charttype.clearAll();
+                        charttype.refresh();
+			console.log(charttype._configXAxis.title);
+                        
 
                         //xtit = charttype.update(123, { text:"abc", value:22 });
                         //alert(charttype.parse(myformgrid,"dhtmlxgrid"));
-                        refresh_chart();
+                        //refresh_chart();
                 }
                 return true;
         });
-
 
         myDataProcessor = new dataProcessor("'.$CFG->wwwroot.'/filter/chart/update.php?chartid='.$matches[1].'"); //lock feed url
         myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
@@ -363,46 +397,9 @@ $script = '
         myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
         myDataProcessorFG.setUpdateMode("off"); //disable auto-update
         myDataProcessorFG.init(myformgrid); //link dataprocessor to the grid
-
-
     }
 
-
-
-/*
-         formData = [
-{type: "settings", position: "label-top"},
-                {type: "block", width: 600, list:[
-                        {type: "input",  name:"type",   label: "Type", inputWidth: 50},
-{type: "newcolumn", offset:20},
-                        {type: "input",  name:"title",label: "Title", inputWidth: 150},
-{type: "newcolumn", offset:20},
-                        {type: "input",  name:"xaxistitle",   label: "X-axis label", inputWidth: 75},
-{type: "newcolumn", offset:20},
-                        {type: "input",  name:"yaxistitle",   label: "Y-axis Label", inputWidth: 75},
-{type: "newcolumn", offset:20},
-                        {type: "button", name:"save",    value:"Submit",    offsetTop:35}
-                ]}
-        ];  
-
-        var myform = new dhtmlXForm("myform_container",formData);        //initializes dhtmlxForm. Object constructor
-        myform.bind(myformgrid);                                             //binds the form to the grid
-*/
-       
-
-</script>
-
-
-
-       <p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\'],mygrid.getRowIndex(mygrid.getSelectedId()))">Add row</a></p>
-                                <p><a href="javascript:void(0)" onclick="mygrid.deleteSelectedItem()">Remove Selected Row</a></p>
-                                <input type="button" name="some_name" value="update" onclick="myDataProcessor.sendData();myDataProcessorFG.sendData();">
-
-
-
-
-
-';
+</script>';
 
             return $script;
         }, $text, -1, $count);
