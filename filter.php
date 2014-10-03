@@ -193,7 +193,7 @@ $script = '
                 //gradient:"3d",
                 container:"chart_container",
                 xValue: "#data0#",
-                value:"#data1#",
+                yValue:"#data1#",
                 //label:"#data0#",  //Bar only
                 yAxis:{
                 title:"'.$result->yaxistitle.'"
@@ -215,6 +215,35 @@ $script = '
                 border:false
         });
         
+        chartscatterold =  new dhtmlXChart({
+                view:"scatter",
+                //view:"bar",
+                color:"#66ccff",
+                //gradient:"3d",
+                container:"chart_container",
+                xValue: "#data0#",
+                value:"#data1#",
+                //label:"#data0#",  //Bar only
+                yAxis:{
+                title:"'.$result->yaxistitle.'"
+                },
+                xAxis:{
+                title:"'.$result->xaxistitle.'",
+                },
+                item:{
+                   radius:5,
+                   borderColor:"#f38f00",
+                   borderWidth:1,
+                   color:"#ff9600",
+                   type:"d",
+                   shadow:true
+                },
+                tooltip:{
+                  template:"(#data0# , #data1#)"
+                },
+                border:false
+        });
+
         chartline =  new dhtmlXChart({
                 view:"'.$result->type.'",
                 //view:"bar",
@@ -247,6 +276,7 @@ $script = '
                 },
                 border:false
         });
+
 
 
 
@@ -288,6 +318,19 @@ $script = '
         mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int")
 
 
+		charttype.addSeries({
+                xValue: "#data2#",
+
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:2,
+                color:"#de619c"}
+
+
+
+               // yValue: "#data3#"
+                });
 
 
 
@@ -399,7 +442,10 @@ $script = '
         myDataProcessorFG.init(myformgrid); //link dataprocessor to the grid
     }
 
-</script>';
+
+        
+
+</script><input type="button" value="add" onclick="addNewSeries();">';
 
             return $script;
         }, $text, -1, $count);
