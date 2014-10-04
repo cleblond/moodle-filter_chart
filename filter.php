@@ -75,13 +75,14 @@ $script = '
         <div '.$hidediv.'>
         <button id="toggle" >Show/Hide</button><br>
         <div id="chartoptions" >
+        <input type="button" name="some_name" value="Save" onclick="myDataProcessor.sendData();myDataProcessorFG.sendData();">
         <table>
         
         <tr><td><div id="gridboxuser" style="width:600px; height:60px; background-color:white; float:left;"></div></td></tr>
         <tr><td><div id="gridboxdata" style="width:600px; height:170px; background-color:white; float:left;"></div></td></tr>
         </table>
         <p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\'],mygrid.getRowIndex(mygrid.getSelectedId())+1)">Add row</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="mygrid.deleteSelectedItem()">Remove Selected Row</a></p>
-        <input type="button" name="some_name" value="update" onclick="myDataProcessor.sendData();myDataProcessorFG.sendData();">
+        <input type="button" name="some_name" value="Save" onclick="myDataProcessor.sendData();myDataProcessorFG.sendData();">
         </div>
         </div>
 	<script type="text/javascript">
@@ -193,73 +194,7 @@ $script = '
         });
 
 
-        
-        chartscatterold =  new dhtmlXChart({
-                view:"scatter",
-                //view:"bar",
-                color:"#66ccff",
-                //gradient:"3d",
-                container:"chart_container",
-                xValue: "#data0#",
-                value:"#data1#",
-                //label:"#data0#",  //Bar only
-                yAxis:{
-                title:"'.$result->yaxistitle.'"
-                },
-                xAxis:{
-                title:"'.$result->xaxistitle.'",
-                },
-                item:{
-                   radius:5,
-                   borderColor:"#f38f00",
-                   borderWidth:1,
-                   color:"#ff9600",
-                   type:"d",
-                   shadow:true
-                },
-                tooltip:{
-                  template:"(#data0# , #data1#)"
-                },
-                border:false
-        });
-
-
-        chartline =  new dhtmlXChart({
-                view:"'.$result->type.'",
-                //view:"bar",
-                color:"#66ccff",
-                //gradient:"3d",
-                container:"chart_container",
-                xValue: "#data0#",
-                value:"#data1#",
-                //label:"#data0#",  //Bar only
-                yAxis:{
-                title:"'.$result->yaxistitle.'"
-                },
-                xAxis:{
-                title:"'.$result->xaxistitle.'",
-                template:"#data0#"
-                //template:function(obj){
-                //    return (obj%20?"":obj)
-                //}
-                },
-                item:{
-                   radius:5,
-                   borderColor:"#f38f00",
-                   borderWidth:1,
-                   color:"#ff9600",
-                   type:"d",
-                   shadow:true
-                },
-                tooltip:{
-                  template:"(#data0# , #data1#)"
-                },
-                border:false
-        });
-
-
-
-
+       
 
         function refresh_chart(){
                 charttype.clearAll();
@@ -279,26 +214,17 @@ $script = '
                 return true;
         }
 
+
         function doOnCheck(rowId,cellInd,state){
 
                 if(state == 0) {
                 console.log(state);
                 console.log(cellInd);
-           /*     charttype.addSeries({
-                xValue: "#data"+cellInd+"#",
-                value: "#data"+cellInd+1+"#",
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:2,
-                color:"#de619c"}  
-               // yValue: "#data3#"
-                });*/
                 //charttype.refresh();
 		//refresh_chart;
-                charttype.hideSeries(cellInd/2);
+                charttype.hideSeries(cellInd);
                 } else {
- console.log(state);
+                console.log(state);
                 console.log(charttype);
                 charttype.addSeries({
                 xValue: "#data"+cellInd+"#",
@@ -312,21 +238,44 @@ $script = '
                 });
                 //charttype.refresh();
 		//refresh_chart;
-                charttype.showSeries(cellInd/2);
+                charttype.showSeries(cellInd);
                 }
                 charttype.refresh();
 
 	}
 
 
-        if (\''.$result->type.'\' === \'scatter\' || \''.$result->type.'\' === \'line\') {
+        function doOnCheckline(rowId,cellInd,state){
 
-       
+                if(state == 0) {
+                //console.log(state);
+                console.log(cellInd);
+                //charttype.refresh();
+		//refresh_chart;
+                charttype.hideSeries(cellInd-1);
+                } else {
+                console.log(state);
+                console.log(charttype);
+               /* charttype.addSeries({
+                value: "#data"+cellInd+"#",
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:2,
+                color:"#de619c"}
+                }); */
+                charttype.showSeries(cellInd-1);
+                }
+                charttype.refresh();
+
+	}
+        ///scatter plot
+        if (\''.$result->type.'\' === \'scatter\') {
 
         chartscatter =  new dhtmlXChart({
                 view:"'.$result->type.'",
                 //view:"bar",
-                color:"#66ccff",
+                color:"red",
                 //gradient:"3d",
                 container:"chart_container",
                 xValue: "#data0#",
@@ -345,20 +294,20 @@ $script = '
 			width:120,
 			toggle:true,
 			values:[
-			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"#0000A0"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"#b25151"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"#FF7F50"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 4</span>",color:"#008B8B"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 5</span>",color:"#6A5ACD"}
+			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"yellow"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"green"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 4</span>",color:"blue"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 5</span>",color:"black"}
 			]},
-                item:{
+               /* item:{
                    radius:5,
                    borderColor:"#f38f00",
                    borderWidth:1,
                    color:"#0000A0",
                    type:"d",
                    shadow:true
-                },
+                }, */
                 tooltip:{
                   template:"(#data0# , #data1#)"
                 },
@@ -372,8 +321,7 @@ $script = '
                 radius:3,
                 type:"s",
                 borderWidth:2,
-                color:"#b25151"}  
-               // yValue: "#data3#"
+                color:"yellow"}
                 });
 
       chartscatter.addSeries({
@@ -383,8 +331,7 @@ $script = '
                 radius:3,
                 type:"s",
                 borderWidth:2,
-                color:"#FF7F50"}  
-               // yValue: "#data3#"
+                color:"green"}
                 });
 
       chartscatter.addSeries({
@@ -394,8 +341,7 @@ $script = '
                 radius:3,
                 type:"s",
                 borderWidth:2,
-                color:"#008B8B"}  
-               // yValue: "#data3#"
+                color:"blue"}  
                 });
 
       chartscatter.addSeries({
@@ -405,16 +351,9 @@ $script = '
                 radius:3,
                 type:"s",
                 borderWidth:2,
-                color:"#6A5ACD"}  
-               // yValue: "#data3#"
+                color:"black"}  
                 });
 
-
-
-
-
-                //alert("scatter chart");
-                //must be scatter
         var charttype = chartscatter;
 
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
@@ -431,23 +370,124 @@ $script = '
         mygrid.checkAll(true);
 
 
-/*
-		charttype.addSeries({
-                xValue: "#data2#",
-                value: "#data3#",
+       }
+
+
+
+        ///scatter/line and spline charts
+        else if (\''.$result->type.'\' === \'spline\' || \''.$result->type.'\' === \'line\' ) {
+        chartscatter =  new dhtmlXChart({
+                view:"'.$result->type.'",
+                //view:"bar",
+                color:"red",
+                //gradient:"3d",
+                container:"chart_container",
+                xValue: "#data0#",
+                value:"#data1#",
+                //label:"#data0#",  //Bar only
+                yAxis:{
+                title:"'.$result->yaxistitle.'"
+                },
+                xAxis:{
+                title:"'.$result->xaxistitle.'",
+                template:"#data0#"
+                },
+                legend:{
+			layout:"y",
+			align:"right",
+			valign:"middle",
+			width:120,
+		//	toggle:true,
+			values:[
+			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"yellow"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"green"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 4</span>",color:"blue"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 5</span>",color:"black"}
+			]},
+               /* item:{
+                   radius:5,
+                   borderColor:"#f38f00",
+                   borderWidth:1,
+                   color:"#0000A0",
+                   type:"d",
+                   shadow:true
+                }, */
+                tooltip:{
+                  template:"(#data0# , #data1#)"
+                },
+                border:false
+        });
+
+       chartscatter.addSeries({
+               // xValue: "#data2#",
+                value: "#data2#",
+                line:{
+                     color:"yellow",
+                },
                 item:{
                 radius:3,
                 type:"s",
-                borderWidth:2,
-                color:"#de619c"}
-
-
-
-               // yValue: "#data3#"
+                borderWidth:1,
+                color:"yellow"}
                 });
-*/
+
+      chartscatter.addSeries({
+              //  xValue: "#data4#",
+                value: "#data3#",
+                line:{
+                color:"green",
+                },
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:1,
+                color:"green"}
+                });
+
+      chartscatter.addSeries({
+              //  xValue: "#data4#",
+                value: "#data4#",
+                line:{
+                color:"blue",
+                },
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:1,
+                color:"blue"}  
+                });
+
+      chartscatter.addSeries({
+            //    xValue: "#data5#",
+                value: "#data5#",
+                line:{
+                color:"black",
+                },
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:1,
+                color:"black"}  
+                });
+
+        var charttype = chartscatter;
+
+        mygrid = new dhtmlXGridObject(\'gridboxdata\');
+        mygrid.setHeader("x1,y1,y2,y3,y4,y5");
+        mygrid.setInitWidths("75,75,75,75,75,75")
+    //    mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+    //    mygrid.setSkin("dhx_skyblue")
+    //    mygrid.enableSmartRendering(true);
+        mygrid.attachHeader(",#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox");
+        mygrid.setColTypes("ed,ed,ed,ed,ed,ed");
+        mygrid.setColSorting("int,int,int,int,int,int");
+        mygrid.attachEvent("onCheckbox",doOnCheckline);
+        mygrid.setColumnColor("silver,silver,lightgrey,lightgrey,silver,lightgrey");
+        mygrid.checkAll(true);
 
 
+        ///bar chart
         } else if (\''.$bartype.'\' === \'bar\') {
                 //alert("bar chart");
                 //must be bar

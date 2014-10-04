@@ -1,7 +1,4 @@
 <?php
-
-
-
 define('AJAX_SCRIPT', true);
 
 if (!isset($CFG)) {
@@ -26,8 +23,8 @@ header("Content-type: text/xml");
 echo('<?xml version="1.0" encoding="utf-8"?>'); 
 
 //start output of data
-print_r($points[1]);
-print_r($points[2]);
+//print_r($points[1]);
+//print_r($points[2]);
 echo '<rows id="0">';
 
 //output data from DB as XML
@@ -60,16 +57,19 @@ if ($grid == 'data') {
         //print_r($points);
                 
 
-                 echo ('<head>');
-                echo ('<column type="co"> Chart type');
-            echo ('<option value="scatter"> scatter </option>');
+            echo ('<head>');
+            echo ('<column type="co"> Chart type');
+        if ($points[1]->type == "line"  or $points[1]->type == "spline"){
             echo ('<option value="line"> line </option>');
             echo ('<option value="spline"> spline </option>');
+            } else {
+            echo ('<option value="scatter"> scatter </option>');
             echo ('<option value="bar"> bar </option>');
             echo ('<option value="barH"> barH </option>');
             echo ('<option value="pie"> pie </option>');
             echo ('<option value="pie3D"> pie3D </option>');
             echo ('<option value="donut"> donut </option>');
+            }
         echo ('</column>');
         echo ('<column type="ed"> Title');
         echo ('</column>');
@@ -96,25 +96,8 @@ echo ('</head>');
 
 }
 
-//}else{
-//error occurs
-//        echo mysql_errno().": ".mysql_error()." at ".__LINE__." line in ".__FILE__." file<br>";
-//}
 
 echo '</rows>';
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
