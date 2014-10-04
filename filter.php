@@ -73,7 +73,7 @@ $script = '
         <tr><td style="text-align: center;"><b>'.$result->title.'</b></td></tr>
         <tr><td><div id="chart_container" style="width:600px;height:300px;"></div></td></tr></table>
         <div '.$hidediv.'>
-        <button id="toggle" >Show/Hide</button>
+        <button id="toggle" >Show/Hide</button><br>
         <div id="chartoptions" >
         <table>
         
@@ -102,8 +102,14 @@ $script = '
 	});
 	</script>
         <script>
-        var charttype;
+
+
+
+//        var charttype;
         window.onload = function(){
+
+
+        var charttype;
 
 
         chartbarh =  new dhtmlXChart({
@@ -186,34 +192,7 @@ $script = '
             y:120
         });
 
-        chartscatter =  new dhtmlXChart({
-                view:"scatter",
-                //view:"bar",
-                color:"#66ccff",
-                //gradient:"3d",
-                container:"chart_container",
-                xValue: "#data0#",
-                yValue:"#data1#",
-                //label:"#data0#",  //Bar only
-                yAxis:{
-                title:"'.$result->yaxistitle.'"
-                },
-                xAxis:{
-                title:"'.$result->xaxistitle.'",
-                },
-                item:{
-                   radius:5,
-                   borderColor:"#f38f00",
-                   borderWidth:1,
-                   color:"#ff9600",
-                   type:"d",
-                   shadow:true
-                },
-                tooltip:{
-                  template:"(#data0# , #data1#)"
-                },
-                border:false
-        });
+
         
         chartscatterold =  new dhtmlXChart({
                 view:"scatter",
@@ -243,6 +222,7 @@ $script = '
                 },
                 border:false
         });
+
 
         chartline =  new dhtmlXChart({
                 view:"'.$result->type.'",
@@ -299,10 +279,140 @@ $script = '
                 return true;
         }
 
+        function doOnCheck(rowId,cellInd,state){
+
+                if(state == 0) {
+                console.log(state);
+                console.log(cellInd);
+           /*     charttype.addSeries({
+                xValue: "#data"+cellInd+"#",
+                value: "#data"+cellInd+1+"#",
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:2,
+                color:"#de619c"}  
+               // yValue: "#data3#"
+                });*/
+                //charttype.refresh();
+		//refresh_chart;
+                charttype.hideSeries(cellInd/2);
+                } else {
+ console.log(state);
+                console.log(charttype);
+                charttype.addSeries({
+                xValue: "#data"+cellInd+"#",
+                value: "#data"+cellInd+1+"#",
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:2,
+                color:"#de619c"}
+               // yValue: "#data3#"
+                });
+                //charttype.refresh();
+		//refresh_chart;
+                charttype.showSeries(cellInd/2);
+                }
+                charttype.refresh();
+
+	}
+
+
+        if (\''.$result->type.'\' === \'scatter\' || \''.$result->type.'\' === \'line\') {
+
+       
+
+        chartscatter =  new dhtmlXChart({
+                view:"'.$result->type.'",
+                //view:"bar",
+                color:"#66ccff",
+                //gradient:"3d",
+                container:"chart_container",
+                xValue: "#data0#",
+                value:"#data1#",
+                //label:"#data0#",  //Bar only
+                yAxis:{
+                title:"'.$result->yaxistitle.'"
+                },
+                xAxis:{
+                title:"'.$result->xaxistitle.'",
+                },
+                legend:{
+			layout:"y",
+			align:"right",
+			valign:"middle",
+			width:120,
+			toggle:true,
+			values:[
+			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"#0000A0"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"#b25151"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"#FF7F50"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 4</span>",color:"#008B8B"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 5</span>",color:"#6A5ACD"}
+			]},
+                item:{
+                   radius:5,
+                   borderColor:"#f38f00",
+                   borderWidth:1,
+                   color:"#0000A0",
+                   type:"d",
+                   shadow:true
+                },
+                tooltip:{
+                  template:"(#data0# , #data1#)"
+                },
+                border:false
+        });
+
+       chartscatter.addSeries({
+                xValue: "#data2#",
+                value: "#data3#",
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:2,
+                color:"#b25151"}  
+               // yValue: "#data3#"
+                });
+
+      chartscatter.addSeries({
+                xValue: "#data4#",
+                value: "#data5#",
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:2,
+                color:"#FF7F50"}  
+               // yValue: "#data3#"
+                });
+
+      chartscatter.addSeries({
+                xValue: "#data6#",
+                value: "#data7#",
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:2,
+                color:"#008B8B"}  
+               // yValue: "#data3#"
+                });
+
+      chartscatter.addSeries({
+                xValue: "#data8#",
+                value: "#data9#",
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:2,
+                color:"#6A5ACD"}  
+               // yValue: "#data3#"
+                });
 
 
 
-        if (\''.$result->type.'\' === \'scatter\') {
+
+
                 //alert("scatter chart");
                 //must be scatter
         var charttype = chartscatter;
@@ -313,14 +423,18 @@ $script = '
     //    mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
     //    mygrid.setSkin("dhx_skyblue")
     //    mygrid.enableSmartRendering(true);
-
+        mygrid.attachHeader("#master_checkbox,,#master_checkbox,,#master_checkbox,,#master_checkbox,,#master_checkbox");
         mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
-        mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int")
+        mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int");
+        mygrid.attachEvent("onCheckbox",doOnCheck);
+        mygrid.setColumnColor("silver,silver,lightgrey,lightgrey,silver,silver,lightgrey,lightgrey,silver,silver");
+        mygrid.checkAll(true);
 
 
+/*
 		charttype.addSeries({
                 xValue: "#data2#",
-
+                value: "#data3#",
                 item:{
                 radius:3,
                 type:"s",
@@ -331,7 +445,7 @@ $script = '
 
                // yValue: "#data3#"
                 });
-
+*/
 
 
         } else if (\''.$bartype.'\' === \'bar\') {
@@ -393,7 +507,9 @@ $script = '
                         refresh_chart();
                 return true;
         });
-
+        for (var i=0; i<mygrid.getColumnCount(); i++){
+        //alert(mygrid.cells(1,i).setValue(1)); //i-index of a column (zero-based numbering)
+        }
 
         //OPtions grid.
         var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
@@ -413,8 +529,8 @@ $script = '
                         //charttype.parse(myformgrid,"dhtmlxgrid");
                         xtit = myformgrid.cells2(0,2).getValue();
                         //alert(xtit);
-                        console.log(charttype);
-                        console.log(charttype._configXAxis.title);
+                        //console.log(charttype);
+                        //console.log(charttype._configXAxis.title);
 			//chart.clearAll();
 			//chart.load("/data/test.json","json");
 			//setTimeout(refreshchart,60000);   
@@ -445,7 +561,7 @@ $script = '
 
         
 
-</script><input type="button" value="add" onclick="addNewSeries();">';
+</script>';
 
             return $script;
         }, $text, -1, $count);
