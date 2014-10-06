@@ -23,10 +23,10 @@ function update_row($chartid){
                 //echo "rowid=".$rowId;
                 $record = new stdClass();
                 $record->id = $rowId;
-                //$record->type = optional_param($rowId."_c0", '', PARAM_TEXT);
-                //$record->title = optional_param($rowId."_c1", '', PARAM_TEXT);
-                //$record->xaxistitle = optional_param($rowId."_c2", '', PARAM_TEXT);
-                //$record->yaxistitle = optional_param($rowId."_c3", '', PARAM_TEXT);
+                $record->type = optional_param($rowId."_c0", '', PARAM_TEXT);
+                $record->title = optional_param($rowId."_c1", '', PARAM_TEXT);
+                $record->xaxistitle = optional_param($rowId."_c2", '', PARAM_TEXT);
+                $record->yaxistitle = optional_param($rowId."_c3", '', PARAM_TEXT);
                 $record->chartoptions = optional_param($rowId."_c4",'', PARAM_TEXT);
                 //print_r($record);
 

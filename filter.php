@@ -497,7 +497,12 @@ $script = '
         mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
         mygrid.setSkin("dhx_skyblue")
         mygrid.enableSmartRendering(true);
-
+        /*mygrid.attachEvent("onCheckBox", function(rId,cInd,state){
+        alert(rId+","+cInd);
+        });*/
+        mygrid.attachEvent("customMasterChecked", function(rId,cInd,state){
+        alert(rId+","+cInd);
+        });
         mygrid.enableMultiselect(true);
         mygrid.enableBlockSelection(true);
         mygrid.forceLabelSelection(true);
