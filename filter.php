@@ -501,7 +501,9 @@ $script = '
         alert(rId+","+cInd);
         });*/
         mygrid.attachEvent("customMasterChecked", function(rId,cInd,state){
-        alert(rId+","+cInd);
+        alert(rId+","+cInd+","+state);
+            if (state==\'1\')
+                {alert("Checked");}
         });
         mygrid.enableMultiselect(true);
         mygrid.enableBlockSelection(true);
