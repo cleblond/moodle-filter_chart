@@ -77,6 +77,8 @@ if ($grid == 'data') {
         echo ('</column>');
         echo ('<column type="ed"> Y-axis title');
         echo ('</column>');
+        echo ('<column type="ed"> Options');
+        echo ('</column>');
 echo ('</head>');
 
 
@@ -88,6 +90,9 @@ echo ('</head>');
                         print("<cell><![CDATA[".$point->title."]]></cell>");
                         print("<cell><![CDATA[".$point->xaxistitle."]]></cell>");
                         print("<cell><![CDATA[".$point->yaxistitle."]]></cell>");
+                        //$options = explode(":" , $point->options);
+                        //print_r($options);
+                        print("<cell><![CDATA[".$point->chartoptions."]]></cell>");
                         print("</row>");
                 }
         }

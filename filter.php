@@ -61,6 +61,32 @@ class filter_chart extends moodle_text_filter {
         $linetype = "line";
         }
 
+//determine which series to show if any (ONLY APPLIES TO scatter, line and spline
+/*
+        if($result->options !== ''){
+        $series = explode(":",$result->options);
+        print_object($series);
+        foreach ($series as $serie) {
+        echo $serie;
+
+       $seriesdisplayed = 'chartscatter.addSeries({
+                xValue: "#data2#",
+                value: "#data3#",
+                item:{
+                radius:3,
+                type:"s",
+                borderWidth:2,
+                color:"yellow"}
+                });'
+
+
+
+        }
+}
+*/
+
+
+
 $script = '
         <table>
         <tr><td style="text-align: center;"><b>'.$result->title.'</b></td></tr>
@@ -175,6 +201,27 @@ $script = '
         function refresh_chart(){
                 charttype.clearAll();
                 charttype.parse(mygrid,"dhtmlxgrid");
+
+                        //charttype.hideSeries(0);
+        };
+        
+
+        function init_chart(){
+                charttype.clearAll();
+                charttype.parse(mygrid,"dhtmlxgrid");
+                //charttype.hideSeries(0);
+                cbxs = "'.$result->chartoptions.'";
+                cbx = cbxs.split("~");
+                console.log(cbx);
+                   
+			for (i = 0; i < cbx.length; i++) {
+			    //text += cars[i] + "<br>";
+                            if (cbx[i]==0){
+                              charttype.hideSeries(i);
+                            }
+			}
+                   
+                 //       charttype.hideSeries(0);
         };
         
         function doOnColorChanged(stage,rId,cIn){
@@ -191,18 +238,10 @@ $script = '
         function doOnCheck(rowId,cellInd,state){
 
                 if(state == 0) {
-                charttype.hideSeries(cellInd);
+                charttype.hideSeries(cellInd/2);
                 } else {
-                charttype.addSeries({
-                xValue: "#data"+cellInd+"#",
-                value: "#data"+cellInd+1+"#",
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:2,
-                color:"#de619c"}
-                });
-                charttype.showSeries(cellInd);
+
+                charttype.showSeries(cellInd/2);
                 }
                 charttype.refresh();
 
@@ -261,6 +300,10 @@ $script = '
                 },
                 border:false
         });
+
+
+       //chartscatter.remove(0);
+
 
        chartscatter.addSeries({
                 xValue: "#data2#",
@@ -339,7 +382,7 @@ $script = '
 			align:"right",
 			valign:"middle",
 			width:120,
-			toggle:true,
+			toggle:false,
 			values:[
 			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
 			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"yellow"},
@@ -460,7 +503,7 @@ $script = '
         mygrid.forceLabelSelection(true);
 
         mygrid.init();
-        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",refresh_chart);
+        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",init_chart);
         mygrid.attachEvent("onEditCell",function(stage){
                 if (stage == 2)
                         refresh_chart();
@@ -469,17 +512,17 @@ $script = '
 
         //OPtions grid.
         var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
-        myformgrid.setHeader("Type,Title,x-axis Title,y-axis Title");
-        myformgrid.setInitWidths("75,75,150,150")
-        myformgrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+        //myformgrid.setHeader("Type,Title,x-axisTitle,y-axisTitle,chartoptions");
+        myformgrid.setInitWidths("75,75,150,150,75")
+        //myformgrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
         myformgrid.setSkin("dhx_skyblue")
-        myformgrid.enableSmartRendering(true);
+        //myformgrid.enableSmartRendering(true);
 
-        myformgrid.setColTypes("coro,ed,ed,ed");
-        myformgrid.setColSorting("int,int,int,int")
+        myformgrid.setColTypes("coro,ed,ed,ed,txt");
+        //myformgrid.setColSorting("int,int,int,int,int")
         myformgrid.init();
         myformgrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=user",refresh_chart);
-       
+       /*
         myformgrid.attachEvent("onEditCell",function(stage){
                 if (stage == 2) {
                         //charttype.parse(myformgrid,"dhtmlxgrid");
@@ -501,7 +544,7 @@ $script = '
                         //refresh_chart();
                 }
                 return true;
-        });
+        }); */
 
         myDataProcessor = new dataProcessor("'.$CFG->wwwroot.'/filter/chart/update.php?chartid='.$matches[1].'"); //lock feed url
         myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
