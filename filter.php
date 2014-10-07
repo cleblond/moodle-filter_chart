@@ -213,16 +213,16 @@ $script = '
                 mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = "false";
                 cbxs = "'.$result->chartoptions.'";
                 cbx = cbxs.split("~");
-                console.log(cbx);
+                //console.log(cbx);
                         j = 0;
 			for (i = 0; i < cbx.length; i++) {
 
 			    //text += cars[i] + "<br>";
-                            if (cbx[i]=="0"){
+                            if (cbx[i]=="false"){
                               charttype.hideSeries(i);
                               mygrid.hdr.rows[2].cells[j].firstChild.firstChild.checked = false;
                             }
-                            j = j + 2;
+                            j = j + 1;
 			}
                    
                  //       charttype.hideSeries(0);
@@ -240,18 +240,36 @@ $script = '
         }
 
         function doOnCheck(rowId,cellInd,state){
-               
-                mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = false;
+                //console.log(rowId+","+cellInd);
+                //mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = false;
                 var checked = mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked;
-                console.log(mygrid.hdr.rows[2].cells[0].firstChild.firstChild);
-                console.log(checked);
-                if(state == 0) {
-                charttype.hideSeries(cellInd/2);
-                } else {
+                //console.log(mygrid.hdr.rows[2].cells[0].firstChild.firstChild);
+                //console.log(checked);
 
-                charttype.showSeries(cellInd/2);
+                if(state == 0) {
+		        charttype.hideSeries(cellInd/2);
+		} else {
+		        charttype.showSeries(cellInd/2);
+		}
+
+                ///build up new options string
+                j = 0;
+                
+                var options = "";
+                for (i = 0; i < 5; i++) {
+		options = options + "~" + mygrid.hdr.rows[2].cells[j].firstChild.firstChild.checked;
+                //console.log(j);
+                j = j + 1; 
                 }
-                charttype.refresh();
+                options=options.substring(1)
+                //console.log(options);
+                myformgrid.cells(1,4).setValue(options)
+		charttype.refresh();
+               
+
+                myDataProcessorFG.setUpdated("1","updated");
+                myDataProcessorFG.sendData();
+
 
 	}
 
@@ -287,7 +305,7 @@ $script = '
 			align:"right",
 			valign:"middle",
 			width:120,
-			toggle:true,
+			toggle:false,
 			values:[
 			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
 			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"yellow"},
@@ -358,7 +376,8 @@ $script = '
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
         mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
         mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75")
-        mygrid.attachHeader("#master_checkbox,,#master_checkbox,,#master_checkbox,,#master_checkbox,,#master_checkbox");
+        //mygrid.attachHeader("#master_checkbox,,#master_checkbox,,#master_checkbox,,#master_checkbox,,#master_checkbox");
+        mygrid.attachHeader("#master_checkbox,#cspan,#master_checkbox,#cspan,#master_checkbox,#cspan,#master_checkbox,#cspan,#master_checkbox,#cspan");
         mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
         mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int");
         //mygrid.attachEvent("onCheckbox",doOnCheck);
@@ -503,7 +522,8 @@ $script = '
         }
 
         mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
-        mygrid.setSkin("dhx_skyblue")
+        mygrid.setSkin("dhx_skyblue");
+
         mygrid.enableSmartRendering(true);
         /*mygrid.attachEvent("onCheckBox", function(rId,cInd,state){
         alert(rId+","+cInd);
@@ -528,9 +548,10 @@ $script = '
         //myformgrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
         myformgrid.setSkin("dhx_skyblue")
         //myformgrid.enableSmartRendering(true);
-
+       
         myformgrid.setColTypes("coro,ed,ed,ed,txt");
         //myformgrid.setColSorting("int,int,int,int,int")
+        myformgrid.setColumnHidden(4,true);
         myformgrid.init();
         myformgrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=user",refresh_chart);
        /*
