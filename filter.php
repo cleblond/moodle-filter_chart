@@ -210,15 +210,19 @@ $script = '
                 charttype.clearAll();
                 charttype.parse(mygrid,"dhtmlxgrid");
                 //charttype.hideSeries(0);
+                mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = "false";
                 cbxs = "'.$result->chartoptions.'";
                 cbx = cbxs.split("~");
                 console.log(cbx);
-                   
+                        j = 0;
 			for (i = 0; i < cbx.length; i++) {
+
 			    //text += cars[i] + "<br>";
-                            if (cbx[i]==0){
+                            if (cbx[i]=="0"){
                               charttype.hideSeries(i);
+                              mygrid.hdr.rows[2].cells[j].firstChild.firstChild.checked = false;
                             }
+                            j = j + 2;
 			}
                    
                  //       charttype.hideSeries(0);
@@ -236,7 +240,11 @@ $script = '
         }
 
         function doOnCheck(rowId,cellInd,state){
-
+               
+                mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = false;
+                var checked = mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked;
+                console.log(mygrid.hdr.rows[2].cells[0].firstChild.firstChild);
+                console.log(checked);
                 if(state == 0) {
                 charttype.hideSeries(cellInd/2);
                 } else {
@@ -353,7 +361,7 @@ $script = '
         mygrid.attachHeader("#master_checkbox,,#master_checkbox,,#master_checkbox,,#master_checkbox,,#master_checkbox");
         mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
         mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int");
-        mygrid.attachEvent("onCheckbox",doOnCheck);
+        //mygrid.attachEvent("onCheckbox",doOnCheck);
         mygrid.setColumnColor("silver,silver,lightgrey,lightgrey,silver,silver,lightgrey,lightgrey,silver,silver");
         mygrid.checkAll(true);
 
@@ -500,11 +508,7 @@ $script = '
         /*mygrid.attachEvent("onCheckBox", function(rId,cInd,state){
         alert(rId+","+cInd);
         });*/
-        mygrid.attachEvent("customMasterChecked", function(rId,cInd,state){
-        alert(rId+","+cInd+","+state);
-            if (state==\'1\')
-                {alert("Checked");}
-        });
+        mygrid.attachEvent("customMasterChecked", doOnCheck);
         mygrid.enableMultiselect(true);
         mygrid.enableBlockSelection(true);
         mygrid.forceLabelSelection(true);
