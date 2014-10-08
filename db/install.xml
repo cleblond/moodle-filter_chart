@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="filter/chart/db" VERSION="20140924" COMMENT="XMLDB file for Moodle filter/chart"
+<XMLDB PATH="filter/chart/db" VERSION="20141007" COMMENT="XMLDB file for Moodle filter/chart"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -31,7 +31,7 @@
         <FIELD NAME="title" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="xaxistitle" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="yaxistitle" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="chartoptions" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="chartoptions" TYPE="char" LENGTH="55" NOTNULL="true" DEFAULT="true~false~false~false~false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

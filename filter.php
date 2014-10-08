@@ -48,7 +48,7 @@ class filter_chart extends moodle_text_filter {
         $pietypes = array("pie", "pie3D", "donut");
         $bartype='';
         $pietype='';
-        $linetype='';
+     //   $linetype='';
         if(in_array($result->type, $pietypes)){
         $pietype = "pie";
         }
@@ -56,10 +56,10 @@ class filter_chart extends moodle_text_filter {
         if(in_array($result->type, $bartypes)){
         $bartype = "bar";
         }
-        $linetypes = array("line", "spline");
-        if(in_array($result->type, $linetypes)){
-        $linetype = "line";
-        }
+     //   $linetypes = array("line", "spline");
+     //   if(in_array($result->type, $linetypes)){
+     //   $linetype = "line";
+     //   }
 
 //determine which series to show if any (ONLY APPLIES TO scatter, line and spline
 /*
@@ -207,6 +207,7 @@ $script = '
         
 
         function init_chart(){
+          
                 charttype.clearAll();
                 charttype.parse(mygrid,"dhtmlxgrid");
                 //charttype.hideSeries(0);
@@ -227,6 +228,45 @@ $script = '
                    
                  //       charttype.hideSeries(0);
         };
+
+        function init_chartline(){
+                //console.log(charttype[legend]);
+
+
+
+		charttype.define("legend",{
+			layout:"y",
+			align:"right",
+			valign:"middle",
+			width:120,
+//			toggle:true,
+			values:[
+			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"yellow"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"green"},
+			]})
+
+               // charttype.clearAll();
+                charttype.parse(mygrid,"dhtmlxgrid");
+                //charttype.hideSeries(0);
+                //mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = "false";
+                cbxs = "'.$result->chartoptions.'";
+                cbx = cbxs.split("~");
+                //console.log(cbx);
+
+			for (i = 0; i < cbx.length; i++) {
+
+			    //text += cars[i] + "<br>";
+                            if (cbx[i]=="false"){
+                              charttype.hideSeries(i);
+                              mygrid.hdr.rows[2].cells[i+1].firstChild.firstChild.checked = false;
+                            }
+			}
+                   
+                 //       charttype.hideSeries(0);
+        };
+
+
         
         function doOnColorChanged(stage,rId,cIn){
                 if(stage==2){
@@ -242,7 +282,7 @@ $script = '
         function doOnCheck(rowId,cellInd,state){
                 //console.log(rowId+","+cellInd);
                 //mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = false;
-                var checked = mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked;
+                //var checked = mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked;
                 //console.log(mygrid.hdr.rows[2].cells[0].firstChild.firstChild);
                 //console.log(checked);
 
@@ -254,16 +294,15 @@ $script = '
 
                 ///build up new options string
                 j = 0;
-                
                 var options = "";
                 for (i = 0; i < 5; i++) {
 		options = options + "~" + mygrid.hdr.rows[2].cells[j].firstChild.firstChild.checked;
                 //console.log(j);
                 j = j + 1; 
                 }
-                options=options.substring(1)
+                options=options.substring(1);
                 //console.log(options);
-                myformgrid.cells(1,4).setValue(options)
+                myformgrid.cells(1,4).setValue(options);
 		charttype.refresh();
                
 
@@ -275,13 +314,29 @@ $script = '
 
 
         function doOnCheckline(rowId,cellInd,state){
-
+                console.log(rowId+","+cellInd);
                 if(state == 0) {
                 charttype.hideSeries(cellInd-1);
                 } else {
                 charttype.showSeries(cellInd-1);
                 }
-                charttype.refresh();
+                //charttype.refresh();
+
+                ///build up new options string
+
+                var options = "";
+                for (i = 0; i < 5; i++) {
+		options = options + "~" + mygrid.hdr.rows[2].cells[i+1].firstChild.firstChild.checked;
+                console.log(i);
+
+                }
+                options=options.substring(1);
+                console.log(options);
+                myformgrid.cells(1,2).setValue(options);
+		charttype.refresh();
+            
+                myDataProcessorFG.setUpdated("1","updated");
+                myDataProcessorFG.sendData();
 
 	}
         ///scatter plot
@@ -307,12 +362,12 @@ $script = '
 			width:120,
 			toggle:false,
 			values:[
-			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
+			{text:"Series 1",color:"red"},
 			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"yellow"},
 			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"green"},
 			{text:"<span style=\'font-size: 8pt;\'>Series 4</span>",color:"blue"},
 			{text:"<span style=\'font-size: 8pt;\'>Series 5</span>",color:"black"}
-			]},
+			]},  
                /* item:{
                    radius:5,
                    borderColor:"#f38f00",
@@ -385,6 +440,27 @@ $script = '
         mygrid.checkAll(true);
 
 
+        mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+        mygrid.setSkin("dhx_skyblue");
+
+        mygrid.enableSmartRendering(true);
+        /*mygrid.attachEvent("onCheckBox", function(rId,cInd,state){
+        alert(rId+","+cInd);
+        });*/
+        mygrid.attachEvent("customMasterChecked", doOnCheck);
+        mygrid.enableMultiselect(true);
+        mygrid.enableBlockSelection(true);
+        mygrid.forceLabelSelection(true);
+
+        mygrid.init();
+        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",init_chart);
+        mygrid.attachEvent("onEditCell",function(stage){
+                if (stage == 2)
+                        refresh_chart();
+                return true;
+        });
+
+
        }
 
 
@@ -404,7 +480,7 @@ $script = '
                 title:"'.$result->xaxistitle.'",
                 template:"#data0#"
                 },
-                legend:{
+               /* legend:{
 			layout:"y",
 			align:"right",
 			valign:"middle",
@@ -416,7 +492,7 @@ $script = '
 			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"green"},
 			{text:"<span style=\'font-size: 8pt;\'>Series 4</span>",color:"blue"},
 			{text:"<span style=\'font-size: 8pt;\'>Series 5</span>",color:"black"}
-			]},
+			]},  */
                 tooltip:{
                   template:"(#data0# , #data1#)"
                 },
@@ -478,10 +554,31 @@ $script = '
         mygrid.setInitWidths("75,75,75,75,75,75")
         mygrid.attachHeader(",#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox");
         mygrid.setColTypes("ed,ed,ed,ed,ed,ed");
-        mygrid.setColSorting("int,int,int,int,int,int");
-        mygrid.attachEvent("onCheckbox",doOnCheckline);
-        mygrid.setColumnColor("silver,silver,lightgrey,lightgrey,silver,lightgrey");
-        mygrid.checkAll(true);
+        //mygrid.setColSorting("int,int,int,int,int,int");
+        //mygrid.attachEvent("onCheckbox",doOnCheckline);
+        mygrid.setColumnColor("grey,lightgrey,silver,lightgrey,silver,silver");
+        //mygrid.checkAll(true);
+
+
+        mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+        mygrid.setSkin("dhx_skyblue");
+
+        mygrid.enableSmartRendering(true);
+        mygrid.attachEvent("customMasterChecked", doOnCheckline);
+        mygrid.enableMultiselect(true);
+        mygrid.enableBlockSelection(true);
+        mygrid.forceLabelSelection(true);
+
+        mygrid.init();
+        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",init_chartline);
+        mygrid.attachEvent("onEditCell",function(stage){
+                if (stage == 2)
+                        refresh_chart();
+                return true;
+        });
+
+
+
 
 
         ///bar chart
@@ -509,25 +606,13 @@ $script = '
         mygrid.setColTypes("ed,ed,ed,cp");
         mygrid.setColSorting("str,str,str,str")
 
-        } else if (\''.$linetype.'\' === \'line\') {
-                //must be scatter
-        var charttype = chartline;
-
-        mygrid = new dhtmlXGridObject(\'gridboxdata\');
-        mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
-        mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75")
-
-        mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
-        mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int")
         }
 
-        mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
+     /*   mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
         mygrid.setSkin("dhx_skyblue");
 
         mygrid.enableSmartRendering(true);
-        /*mygrid.attachEvent("onCheckBox", function(rId,cInd,state){
-        alert(rId+","+cInd);
-        });*/
+
         mygrid.attachEvent("customMasterChecked", doOnCheck);
         mygrid.enableMultiselect(true);
         mygrid.enableBlockSelection(true);
@@ -540,7 +625,7 @@ $script = '
                         refresh_chart();
                 return true;
         });
-
+     */
         //OPtions grid.
         var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
         //myformgrid.setHeader("Type,Title,x-axisTitle,y-axisTitle,chartoptions");
@@ -551,7 +636,7 @@ $script = '
        
         myformgrid.setColTypes("coro,ed,ed,ed,txt");
         //myformgrid.setColSorting("int,int,int,int,int")
-        myformgrid.setColumnHidden(4,true);
+        //myformgrid.setColumnHidden(4,true);
         myformgrid.init();
         myformgrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=user",refresh_chart);
        /*
