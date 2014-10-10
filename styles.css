@@ -6,5 +6,15 @@ display: inline-block;
 overflow-y:hidden;
 }
 
+/*
+.dhx_chart_legend {
+visibility: hidden;
+diplay: none
+}
+*/
 
+.dhx_chart_legend .hidden {
+visibility: visible;
+display: block;
+}
 

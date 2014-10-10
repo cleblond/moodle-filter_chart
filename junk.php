@@ -32,11 +32,11 @@ class filter_chart extends moodle_text_filter {
 
     public function filter($text, array $options = array()) {
         global $CFG, $USER;
-        $search = '/<div.*?class="eo_chart".*?chart="(.*?)".*?type="(.*?)".*?group="(.*?)".*?readonly="(.*?)".*?uid="(.*?)"><\/div>/';
+        $search = '/<div.*?class="eo_chart".*?chart="(.*?)".*?type="(.*?)".*?group="(.*?)".*?readonly="(.*?)".*?uid="(.*?)">(.*?)<\/div>/';
         $id = 1;
         $newtext = preg_replace_callback($search, function($matches) use (&$id) {
         global $CFG, $DB, $USER;    
-        print_object($matches);
+
         $result = $DB->get_record('filter_chart_users', array('id'=>$matches[1]));
         $hidediv = '';
         if ($USER->id !== $result->userid) {
@@ -211,7 +211,7 @@ $script = '
                /// charttype.clearAll();
                 charttype.parse(mygrid,"dhtmlxgrid");
                 //charttype.hideSeries(0);
-                //mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = "false";
+                mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = "false";
                 cbxs = "'.$result->chartoptions.'";
                 cbx = cbxs.split("~");
                 //console.log(cbx);
@@ -231,6 +231,22 @@ $script = '
 
         function init_chartline(){
                 //console.log(charttype[legend]);
+
+
+
+	/*	charttype.define("legend",{
+			layout:"y",
+			align:"right",
+			valign:"middle",
+			width:120,
+//			toggle:true,
+			values:[
+			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"yellow"},
+			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"green"},
+			]})
+        */
+               // charttype.clearAll();
                 charttype.parse(mygrid,"dhtmlxgrid");
                 //charttype.hideSeries(0);
                 //mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = "false";
@@ -253,7 +269,7 @@ $script = '
 
         
         function doOnColorChanged(stage,rId,cIn){
-                //console.log("HERERERE");
+                console.log("HERERERE");
                 if(stage==2){
                         if(cIn==2){
                                 mygrid.cells(rId,3).setValue(mygrid.cells(rId,2).getValue())
@@ -318,13 +334,12 @@ $script = '
                 options=options.substring(1);
                 console.log(options);
                 myformgrid.cells(1,4).setValue(options);
-		//charttype.refresh();
+		charttype.refresh();
             
                 myDataProcessorFG.setUpdated("1","updated");
                 myDataProcessorFG.sendData();
 
 	}
-
         ///scatter plot
         if (\''.$result->type.'\' === \'scatter\') {
 
@@ -455,7 +470,7 @@ $script = '
 
 
         ///scatter/line and spline charts
-        else if (\''.$result->type.'\' == \'spline\' || \''.$result->type.'\' == \'line\' ) {
+        else if (\''.$result->type.'\' === \'spline\' || \''.$result->type.'\' === \'line\' ) {
         charttype =  new dhtmlXChart({
                 view:"'.$result->type.'",
                 color:"red",
@@ -465,18 +480,10 @@ $script = '
                 yAxis:{
                 title:"'.$result->yaxistitle.'"
                 },
-                line:{
-                     color:"red",
-                },
                 xAxis:{
                 title:"'.$result->xaxistitle.'",
-                //template:"#data0#"
+                template:"#data0#"
                 },
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:1,
-                color:"red"},
                 legend:{
 			layout:"y",
 			align:"right",
@@ -553,7 +560,7 @@ $script = '
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
         mygrid.setHeader("x1,y1,y2,y3,y4,y5");
         mygrid.setInitWidths("75,75,75,75,75,75")
-        mygrid.attachHeader("\'\',#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox");
+        mygrid.attachHeader(",#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox");
         mygrid.setColTypes("ed,ed,ed,ed,ed,ed");
         //mygrid.setColSorting("int,int,int,int,int,int");
         //mygrid.attachEvent("onCheckbox",doOnCheckline);
@@ -644,7 +651,7 @@ $script = '
         myformgrid.attachEvent("onEditCell",function(stage){
                 if (stage == 2) {
                         //charttype.parse(myformgrid,"dhtmlxgrid");
-                        //xtit = myformgrid.cells2(0,2).getValue();
+                        xtit = myformgrid.cells2(0,2).getValue();
                         //alert(xtit);
                         //console.log(charttype);
                         //console.log(charttype._configXAxis.title);
@@ -653,7 +660,7 @@ $script = '
 			//setTimeout(refreshchart,60000);   
 			//charttype._configXAxis.title = "NEW AXIS TITLE";
                         //charttype.clearAll();
-                        //charttype.refresh();
+                        charttype.refresh();
 			//console.log(charttype._configXAxis.title);
                         
 
