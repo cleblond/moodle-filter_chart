@@ -114,7 +114,7 @@ $ids = explode("," , $ids);
 
 for ($i=0; $i < sizeof($ids); $i++) { 
 	$rowId = $ids[$i]; //id or row which was updated
-        echo "rowId=".$rowId;
+        //echo "rowId=".$rowId;
 	$newId = $rowId; //will be used for insert operation	
 	//$mode = $_POST[$rowId."_!nativeeditor_status"]; //get request mode
         $mode = optional_param($rowId."_!nativeeditor_status", 0, PARAM_TEXT);

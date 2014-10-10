@@ -45,6 +45,16 @@ function update_row($chartid){
 }
 
 
+$ids  = optional_param('ids', '', PARAM_TEXT);
+$chartid  = optional_param('chartid', 0, PARAM_INT);
+
+
+        $result = $DB->get_record('filter_chart_users', array('id'=>$chartid));
+        //$hidediv = '';
+        if ($USER->id !== $result->userid) {
+        ///don't allow editing and hide the options and data grids
+        return "You don;t Have Permissions";
+        }
 
 
 //include XML Header (as response will be in xml format)
@@ -54,15 +64,14 @@ echo('<?xml version="1.0" encoding="utf-8"?>');
 //output update results
 echo "<data>";
 
-$ids  = optional_param('ids', '', PARAM_TEXT);
-$chartid  = optional_param('chartid', 0, PARAM_INT);
+
 //echo "ids=$ids";
-//echo "chartid=$chartid";
+echo "chartid=$chartid";
 //$ids = explode("," , $ids);
 
 
         $rowId = $ids; //id or row which was updated
-        echo "rowId=".$rowId;
+        //echo "rowId=".$rowId;
         $newId = $rowId; //will be used for insert operation        
         //$mode = $_POST[$rowId."_!nativeeditor_status"]; //get request mode
         $mode = optional_param($rowId."_!nativeeditor_status", 0, PARAM_TEXT);

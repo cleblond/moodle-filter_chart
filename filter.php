@@ -56,10 +56,11 @@ class filter_chart extends moodle_text_filter {
         if(in_array($result->type, $bartypes)){
         $bartype = "bar";
         }
-     //   $linetypes = array("line", "spline");
-     //   if(in_array($result->type, $linetypes)){
-     //   $linetype = "line";
-     //   }
+        $linetype = '';
+        $linetypes = array("line", "spline", "scatter");
+        if(in_array($result->type, $linetypes)){
+        $linetype = "line";
+        }
 
 //determine which series to show if any (ONLY APPLIES TO scatter, line and spline
 /*
@@ -84,6 +85,8 @@ class filter_chart extends moodle_text_filter {
         }
 }
 */
+
+
 
 
 
@@ -124,79 +127,9 @@ $script = '
         <script>
         window.onload = function(){
         var charttype;
-        chartbarh =  new dhtmlXChart({
-                view:"'.$result->type.'",
-                color:"#data2#",
-                gradient:"rising",
-                container:"chart_container",
-                value:"#data1#",
-                label:"#data1#",  //Bar only
-                yAxis:{
-                template:"#data0#",
-                title:"'.$result->yaxistitle.'"
-                },
-                xAxis:{
-                title:"'.$result->xaxistitle.'",
-                //template:"#data0#"
-                template:function(obj){
-                    return (obj%20?"":obj)
-                }
 
-                },
-                item:{
-                   radius:5,
-                   borderColor:"#f38f00",
-                   borderWidth:1,
-                   color:"#ff9600",
-                   type:"d",
-                   shadow:true
-                },
-                tooltip:{
-                  template:"(#data0# , #data1#)"
-                },
-                border:false
-        });
 
-        chartbar =  new dhtmlXChart({
-                view:"'.$result->type.'",
-                color:"#data2#",
-                gradient:"rising",
-                container:"chart_container",
-                value:"#data1#",
-                label:"#data0#",  //Bar only
-                yAxis:{
-                title:"'.$result->yaxistitle.'"
-                },
-                xAxis:{
-                title:"'.$result->xaxistitle.'",
-                template:"#data0#"
-                },
-                item:{
-                   radius:5,
-                   borderColor:"#f38f00",
-                   borderWidth:1,
-                   color:"#ff9600",
-                   type:"d",
-                   shadow:true
-                },
-                tooltip:{
-                  template:"(#data0# , #data1#)"
-                },
-                border:false
-        });
 
-        chartpie =  new dhtmlXChart({
-            view:"'.$result->type.'",
-            container:"chart_container",
-            value:"#data1#",
-            color:"#data2#",
-            tooltip:"#data1#",
-            label:"#data0#",
-            shadow:0,
-            radius:65,
-            x:280,
-            y:120
-        });
 
         function refresh_chart(){
                 charttype.clearAll();
@@ -215,6 +148,7 @@ $script = '
                 cbxs = "'.$result->chartoptions.'";
                 cbx = cbxs.split("~");
                 //console.log(cbx);
+                   if ("'.$linetype.'" == "line"){
                         j = 0;
 			for (i = 0; i < cbx.length; i++) {
 
@@ -225,12 +159,12 @@ $script = '
                             }
                             j = j + 1;
 			}
-                   
+                   }
                  //       charttype.hideSeries(0);
         };
 
         function init_chartline(){
-                //console.log(charttype[legend]);
+
                 charttype.parse(mygrid,"dhtmlxgrid");
                 //charttype.hideSeries(0);
                 //mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = "false";
@@ -265,6 +199,8 @@ $script = '
         }
 
         function doOnCheck(rowId,cellInd,state){
+                console.log(myformgrid.cells('.$matches[1].',4).getValue());
+                //myformgrid.cells(1,3).setValue("JUNK");
                 //console.log(rowId+","+cellInd);
                 //mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = false;
                 //var checked = mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked;
@@ -287,11 +223,11 @@ $script = '
                 }
                 options=options.substring(1);
                 console.log(options);
-                myformgrid.cells(1,4).setValue(options);
+                myformgrid.cells('.$matches[1].',4).setValue(options);
 		charttype.refresh();
                
 
-                myDataProcessorFG.setUpdated("1","updated");
+                myDataProcessorFG.setUpdated('.$matches[1].',"updated");
                 myDataProcessorFG.sendData();
 
 
@@ -299,6 +235,7 @@ $script = '
 
 
         function doOnCheckline(rowId,cellInd,state){
+                console.log(myformgrid.cells('.$matches[1].',4).getValue());
                 console.log(rowId+","+cellInd);
                 if(state == 0) {
                 charttype.hideSeries(cellInd-1);
@@ -308,7 +245,7 @@ $script = '
                 //charttype.refresh();
 
                 ///build up new options string
-
+                var j = 0;
                 var options = "";
                 for (i = 0; i < 5; i++) {
 		options = options + "~" + mygrid.hdr.rows[2].cells[i+1].firstChild.firstChild.checked;
@@ -317,10 +254,10 @@ $script = '
                 }
                 options=options.substring(1);
                 console.log(options);
-                myformgrid.cells(1,4).setValue(options);
+                myformgrid.cells('.$matches[1].',4).setValue(options);
 		//charttype.refresh();
             
-                myDataProcessorFG.setUpdated("1","updated");
+                myDataProcessorFG.setUpdated('.$matches[1].',"updated");
                 myDataProcessorFG.sendData();
 
 	}
@@ -419,7 +356,7 @@ $script = '
 
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
         mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
-        mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75")
+        mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75");
         //mygrid.attachHeader("#master_checkbox,,#master_checkbox,,#master_checkbox,,#master_checkbox,,#master_checkbox");
         mygrid.attachHeader("#master_checkbox,#cspan,#master_checkbox,#cspan,#master_checkbox,#cspan,#master_checkbox,#cspan,#master_checkbox,#cspan");
         mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
@@ -470,7 +407,7 @@ $script = '
                 },
                 xAxis:{
                 title:"'.$result->xaxistitle.'",
-                //template:"#data0#"
+                template:"#data0#"
                 },
                 item:{
                 radius:3,
@@ -497,7 +434,7 @@ $script = '
         });
 
        charttype.addSeries({
-                xValue: "#data0#",
+                //xValue: "#data0#",
                 value: "#data2#",
                 line:{
                      color:"yellow",
@@ -510,7 +447,7 @@ $script = '
                 });
 
       charttype.addSeries({
-                xValue: "#data0#",
+                //xValue: "#data0#",
                 value: "#data3#",
                 line:{
                 color:"green",
@@ -523,7 +460,7 @@ $script = '
                 });
 
       charttype.addSeries({
-                xValue: "#data0#",
+                //xValue: "#data0#",
                 value: "#data4#",
                 line:{
                 color:"blue",
@@ -536,7 +473,7 @@ $script = '
                 });
 
       charttype.addSeries({
-                xValue: "#data0#",
+                //xValue: "#data0#",
                 value: "#data5#",
                 line:{
                 color:"black",
@@ -551,25 +488,21 @@ $script = '
         //var charttype = chartscatter;
 
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
-        mygrid.setHeader("x1,y1,y2,y3,y4,y5");
-        mygrid.setInitWidths("75,75,75,75,75,75")
-        mygrid.attachHeader("\'\',#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox");
-        mygrid.setColTypes("ed,ed,ed,ed,ed,ed");
-        //mygrid.setColSorting("int,int,int,int,int,int");
+        mygrid.setHeader("x1,y1,y2,y3,y4,y5,j,j,j,j");
+        mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75");
+        mygrid.attachHeader(",#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox,#master_checkbox,,,,");
+        mygrid.setColTypes("ed,ed,ed,ed,ed,ed,ed,ed,ed,ed");
+        //mygrid.setColSorting("int,int,int,int,int,int,int,int,int,int");
         //mygrid.attachEvent("onCheckbox",doOnCheckline);
-        mygrid.setColumnColor("grey,lightgrey,silver,lightgrey,silver,silver");
+        mygrid.setColumnColor("grey,lightgrey,silver,lightgrey,silver,silver,silver,silver,silver,silver");
         mygrid.checkAll(true);
-
-
         mygrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
         mygrid.setSkin("dhx_skyblue");
-
         mygrid.enableSmartRendering(true);
         mygrid.attachEvent("customMasterChecked", doOnCheckline);
         mygrid.enableMultiselect(true);
         mygrid.enableBlockSelection(true);
         mygrid.forceLabelSelection(true);
-
         mygrid.init();
         mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",init_chartline);
         mygrid.attachEvent("onEditCell",function(stage){
@@ -579,24 +512,107 @@ $script = '
         });
 
 
-
-
-
         ///bar chart
         } else if (\''.$bartype.'\' === \'bar\') {
-                //alert("bar chart");
-                //must be bar
-        if (\''.$result->type.'\' === \'barH\') {var charttype = chartbarh}else{charttype = chartbar;}
+        
 
+        chartbarh =  new dhtmlXChart({
+                view:"'.$result->type.'",
+                color:"#data2#",
+                gradient:"rising",
+                container:"chart_container",
+                value:"#data1#",
+                label:"#data1#",  //Bar only
+                yAxis:{
+                template:"#data0#",
+                title:"'.$result->yaxistitle.'"
+                },
+                xAxis:{
+                title:"'.$result->xaxistitle.'",
+                //template:"#data0#"
+                template:function(obj){
+                    return (obj%20?"":obj)
+                }
+
+                },
+                item:{
+                   radius:5,
+                   borderColor:"#f38f00",
+                   borderWidth:1,
+                   color:"#ff9600",
+                   type:"d",
+                   shadow:true
+                },
+                tooltip:{
+                  template:"(#data0# , #data1#)"
+                },
+                border:false
+        });
+
+        chartbar =  new dhtmlXChart({
+                view:"'.$result->type.'",
+                color:"#data2#",
+                gradient:"rising",
+                container:"chart_container",
+                value:"#data1#",
+                label:"#data0#",  //Bar only
+                yAxis:{
+                title:"'.$result->yaxistitle.'"
+                },
+                xAxis:{
+                title:"'.$result->xaxistitle.'",
+                template:"#data0#"
+                },
+                item:{
+                   radius:5,
+                   borderColor:"#f38f00",
+                   borderWidth:1,
+                   color:"#ff9600",
+                   type:"d",
+                   shadow:true
+                },
+                tooltip:{
+                  template:"(#data0# , #data1#)"
+                },
+                border:false
+        });
+        if (\''.$result->type.'\' === \'barH\') {var charttype = chartbarh}else{charttype = chartbar;}
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
         mygrid.setHeader("Bar Label,Bar Value, Color Code, Color");
         mygrid.setInitWidths("75, 75, 75, 75")
         mygrid.attachEvent("onEditCell",doOnColorChanged);
         mygrid.setColTypes("ed,ed,ed,cp");
         mygrid.setColSorting("str,str,str,str")
+        mygrid.setSkin("dhx_skyblue");
 
+        mygrid.enableSmartRendering(true);
+
+        //mygrid.attachEvent("customMasterChecked", doOnCheck);
+        mygrid.enableMultiselect(true);
+        mygrid.enableBlockSelection(true);
+        mygrid.forceLabelSelection(true);
+
+        mygrid.init();
+        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",init_chart);
+        mygrid.attachEvent("onEditCell",function(stage){
+                if (stage == 2)
+                        refresh_chart();
+                return true;
+        });
 
         } else if (\''.$pietype.'\' === \'pie\') {
+        chartpie =  new dhtmlXChart({
+            view:"'.$result->type.'",
+            container:"chart_container",
+            value:"#data1#",
+            color:"#data2#",
+            tooltip:"#data1#",
+            label:"#data0#",
+            shadow:0,
+            radius:65,
+            x:280,
+            y:120
+        });
         var charttype = chartpie;
 
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
@@ -606,6 +622,24 @@ $script = '
         mygrid.attachEvent("onEditCell",doOnColorChanged);
         mygrid.setColTypes("ed,ed,ed,cp");
         mygrid.setColSorting("str,str,str,str")
+
+        mygrid.setSkin("dhx_skyblue");
+
+        mygrid.enableSmartRendering(true);
+
+        //mygrid.attachEvent("customMasterChecked", doOnCheck);
+        mygrid.enableMultiselect(true);
+        mygrid.enableBlockSelection(true);
+        mygrid.forceLabelSelection(true);
+
+        mygrid.init();
+        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",init_chart);
+        mygrid.attachEvent("onEditCell",function(stage){
+                if (stage == 2)
+                        refresh_chart();
+                return true;
+        });
+
 
         }
 
@@ -628,6 +662,7 @@ $script = '
         });
      */
         //OPtions grid.
+        console.log("Right Here");
         var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
         //myformgrid.setHeader("Type,Title,x-axisTitle,y-axisTitle,chartoptions");
         myformgrid.setInitWidths("75,75,150,150,75");
@@ -635,11 +670,11 @@ $script = '
         myformgrid.setSkin("dhx_skyblue");
         //myformgrid.enableSmartRendering(true);
        
-        myformgrid.setColTypes("coro,ed,ed,ed,txt");
+        //myformgrid.setColTypes("coro,ed,ed,ed,txt");
         //myformgrid.setColSorting("int,int,int,int,int")
         //myformgrid.setColumnHidden(4,true);
         myformgrid.init();
-        myformgrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=user",refresh_chart);
+        myformgrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=user");
        /*
         myformgrid.attachEvent("onEditCell",function(stage){
                 if (stage == 2) {
@@ -673,10 +708,7 @@ $script = '
         myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
         myDataProcessorFG.setUpdateMode("off"); //disable auto-update
         myDataProcessorFG.init(myformgrid); //link dataprocessor to the grid
-    }
-
-
-        
+    }    ///end window.onload 
 
 </script>';
 
