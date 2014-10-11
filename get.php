@@ -94,6 +94,17 @@ echo ('</head>');
                         //print_r($options);
                         print("<cell><![CDATA[".$point->chartoptions."]]></cell>");
                         print("</row>");
+                        
+                       echo ("<row id='".($point->id + 1)."'>");
+                        print("<cell type=\"ed\"><![CDATA[".$point->series1."]]></cell>");
+                        print("<cell><![CDATA[".$point->series2."]]></cell>");
+                        print("<cell><![CDATA[".$point->series3."]]></cell>");
+                        print("<cell><![CDATA[".$point->series4."]]></cell>");
+                        print("<cell><![CDATA[".$point->series5."]]></cell>");
+                        print("</row>");
+
+
+
                 }
         }
 

@@ -17,17 +17,29 @@ error_reporting(E_ALL ^ E_NOTICE);
 //echo "title=$title";
 
 
-function update_row($chartid){
+function update_row($chartid, $rowId){
                 global $DB;
-                $rowId = $chartid; 
+               
                 //echo "rowid=".$rowId;
                 $record = new stdClass();
-                $record->id = $rowId;
+                $record->id = $chartid;
+                if ($rowId == $chartid){
+
+
                 $record->type = optional_param($rowId."_c0", '', PARAM_TEXT);
                 $record->title = optional_param($rowId."_c1", '', PARAM_TEXT);
                 $record->xaxistitle = optional_param($rowId."_c2", '', PARAM_TEXT);
                 $record->yaxistitle = optional_param($rowId."_c3", '', PARAM_TEXT);
                 $record->chartoptions = optional_param($rowId."_c4",'', PARAM_TEXT);
+                } else {
+                $record->series1 = optional_param($rowId."_c0",'', PARAM_TEXT);
+                $record->series2 = optional_param($rowId."_c1",'', PARAM_TEXT);
+                $record->series3 = optional_param($rowId."_c2",'', PARAM_TEXT);
+                $record->series4 = optional_param($rowId."_c3",'', PARAM_TEXT);
+                $record->series5 = optional_param($rowId."_c4",'', PARAM_TEXT);
+                }
+
+
                 //print_r($record);
 
                 //$DB->insert_record('filter_chart_data', $record, true);
@@ -66,20 +78,22 @@ echo "<data>";
 
 
 //echo "ids=$ids";
-echo "chartid=$chartid";
+//echo "chartid=$chartid";
 //$ids = explode("," , $ids);
 
 
         $rowId = $ids; //id or row which was updated
-        //echo "rowId=".$rowId;
+        echo "rowId=".$rowId;
         $newId = $rowId; //will be used for insert operation        
         //$mode = $_POST[$rowId."_!nativeeditor_status"]; //get request mode
         $mode = optional_param($rowId."_!nativeeditor_status", 0, PARAM_TEXT);
         //echo "mode=$mode";
-        
-        $action = update_row($chartid);        
+        $rows = explode( ",", $rowId);
+        foreach ($rows as $row){
+        echo "here";
+        $action = update_row($chartid, $row);        
         echo "<action type='".$action."' sid='".$rowId."' tid='".$newId."'/>";
-        
+        }
 
 
 echo "</data>";

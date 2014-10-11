@@ -39,9 +39,91 @@ class filter_chart extends moodle_text_filter {
         print_object($matches);
         $result = $DB->get_record('filter_chart_users', array('id'=>$matches[1]));
         $hidediv = '';
+
+
+
+
+
+
+
+
+
+
+
+
+//       echo $legend;
+//                        {text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
+//			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"yellow"},
+//			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"green"},
+//			{text:"<span style=\'font-size: 8pt;\'>Series 4</span>",color:"blue"},
+//			{text:"<span style=\'font-size: 8pt;\'>Series 5</span>",color:"black"}
+
+		       $color = array("red", "yellow", "green", "blue", "black");
+                       $marker = array("c", "s", "t", "b", "x");
+                       $ro = "";
+        ///don't allow editing, add legend and hide the options and data grids if not creator
         if ($USER->id !== $result->userid) {
-        ///don't allow editing and hide the options and data grids
-        $hidediv = 'style="display: none;"';
+			$hidediv = 'style="display: none;"';
+		       //Build up legend text for ro mode
+		       $seriesvisible = explode("~", $result->chartoptions);
+		       print_object($seriesvisible);
+		       $rolegend="";
+		       for ($i=1; $i<=5; $i++) {
+			    echo $seriesvisible[$i-1];
+			    if($seriesvisible[$i-1] == "true") {
+			    $leg = "series".$i;
+			    $rolegend .= '{text:"'.$result->$leg.'",color:"'.$color[$i-1].'"},';
+			    }
+		       }
+		       echo "$rolegend";
+			      //add all series text
+		       $addroseries = '';
+		       $j=2;
+		       for ($i=2; $i<=5; $i++) {
+			    if($seriesvisible[$i-1] == "true") {
+			       $addroseries .= 'charttype.addSeries({
+					xValue: "#data'.$j.'#",
+					value: "#data'.($j+1).'#",
+					item:{
+					radius:3,
+					type:"s",
+					borderWidth:2,
+					color:"'.$color[$i-1].'"}
+					});';
+			       $j=$j+2;
+			    }
+
+		       }
+                       $addseries = $addroseries;
+                       $legend = $rolegend;
+		       print_object($addroseries);
+                       $ro = "ro";
+		
+        } else {
+			//Build up legend text all curves
+
+		       $legend="";
+		       for ($i=1; $i<=5; $i++) {
+			  $leg = "series".$i;
+			  $legend .= '{text:"'.$result->$leg.'",color:"'.$color[$i-1].'"},';
+		       }
+		       //add all series text
+		       $addseries = '';
+		       $j=2;
+		       for ($i=2; $i<=5; $i++) {
+		       $addseries .= 'charttype.addSeries({
+				xValue: "#data'.$j.'#",
+				value: "#data'.($j+1).'#",
+				item:{
+				radius:3,
+				type:"s",
+				borderWidth:2,
+				color:"'.$color[$i-1].'"}
+				});';
+		       $j=$j+2;
+		       }
+		       print_object($addseries);
+
         }
 
         //Take care of pie type graphs.
@@ -65,7 +147,6 @@ class filter_chart extends moodle_text_filter {
 
 
 
-
  $pre =	'       <table>
         <tr><td style="text-align: center;"><b>'.$result->title.'</b></td></tr>
         <tr><td><div id="chart_container" style="width:600px;height:300px;"></div></td></tr></table>
@@ -75,7 +156,7 @@ class filter_chart extends moodle_text_filter {
         <input type="button" name="some_name" value="Save" onclick="myDataProcessor.sendData();myDataProcessorFG.sendData();">
         <table>
         
-        <tr><td><div id="gridboxuser" style="width:600px; height:60px; background-color:white; float:left;"></div></td></tr>
+        <tr><td><div id="gridboxuser" style="width:600px; height:95px; background-color:white; float:left;"></div></td></tr>
         <tr><td><div id="gridboxdata" style="width:600px; height:170px; background-color:white; float:left;"></div></td></tr>
         </table>
         <p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\'],mygrid.getRowIndex(mygrid.getSelectedId())+1)">Add row</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="mygrid.deleteSelectedItem()">Remove Selected Row</a></p>
@@ -101,7 +182,7 @@ class filter_chart extends moodle_text_filter {
 	</script>
         <script>
         window.onload = function(){
-        var charttype;
+        //var charttype;
 
 
 
@@ -113,16 +194,23 @@ class filter_chart extends moodle_text_filter {
                         //charttype.hideSeries(0);
         };
         
+        function init_rochart(){
+        charttype.parse(mygrid,"dhtmlxgrid");
+        }
+
+
+
 
         function init_chart(){
           
                /// charttype.clearAll();
-                charttype.parse(mygrid,"dhtmlxgrid");
+
                 //charttype.hideSeries(0);
                 //mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = "false";
                 cbxs = "'.$result->chartoptions.'";
                 cbx = cbxs.split("~");
                 //console.log(cbx);
+              
                    if ("'.$linetype.'" == "line"){
                         j = 0;
 			for (i = 0; i < cbx.length; i++) {
@@ -241,29 +329,7 @@ class filter_chart extends moodle_text_filter {
 
 
 
-//determine which series to show if any (ONLY APPLIES TO scatter, line and spline
-/*
-        if($result->options !== ''){
-        $series = explode(":",$result->options);
-        print_object($series);
-        foreach ($series as $serie) {
-        echo $serie;
 
-       $seriesdisplayed = 'chartscatter.addSeries({
-                xValue: "#data2#",
-                value: "#data3#",
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:2,
-                color:"yellow"}
-                });'
-
-
-
-        }
-}
-*/
 
 
 switch ($result->type) {
@@ -291,13 +357,7 @@ $script = '
                          marker:{
                         type: "item"
                         },
-			values:[
-			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"yellow"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"green"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 4</span>",color:"blue"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 5</span>",color:"black"}
-			]},  
+			values:['.$legend.']},  
                 item:{
                    radius:5,
                   // borderColor:"red",
@@ -311,8 +371,8 @@ $script = '
                 },
                 border:false
         });
-
-       charttype.addSeries({
+        '.$addseries.'
+     /*  charttype.addSeries({
                 xValue: "#data2#",
                 value: "#data3#",
                 item:{
@@ -351,7 +411,7 @@ $script = '
                 borderWidth:2,
                 color:"black"}  
                 });
-
+        */
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
         mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
         mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75");
@@ -377,7 +437,7 @@ $script = '
         mygrid.forceLabelSelection(true);
 
         mygrid.init();
-        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",init_chart);
+        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",init_'.$ro.'chart);
         mygrid.attachEvent("onEditCell",function(stage){
                 if (stage == 2)
                         refresh_chart();
@@ -390,13 +450,7 @@ $script = '
         var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
         //myformgrid.setHeader("Type,Title,x-axisTitle,y-axisTitle,chartoptions");
         myformgrid.setInitWidths("75,75,150,150,75");
-        //myformgrid.setImagePath(\''.$CFG->wwwroot.'/filter/chart/codebase/imgs/\');
         myformgrid.setSkin("dhx_skyblue");
-        //myformgrid.enableSmartRendering(true);
-       
-        //myformgrid.setColTypes("coro,ed,ed,ed,txt");
-        //myformgrid.setColSorting("int,int,int,int,int")
-        //myformgrid.setColumnHidden(4,true);
         myformgrid.init();
         myformgrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=user");
 
@@ -445,13 +499,7 @@ $script = '
 			valign:"middle",
 			width:120,
 			toggle:true,
-			values:[
-			{text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 2</span>",color:"yellow"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 3</span>",color:"green"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 4</span>",color:"blue"},
-			{text:"<span style=\'font-size: 8pt;\'>Series 5</span>",color:"black"}
-			]},  
+			values:['.$legend.']},  
               /*  tooltip:{
                   template:"(#data0# , #data1#)"
                 }, */
@@ -529,7 +577,7 @@ $script = '
         mygrid.enableBlockSelection(true);
         mygrid.forceLabelSelection(true);
         mygrid.init();
-        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",init_chartline);
+        mygrid.loadXML("'.$CFG->wwwroot.'/filter/chart/get.php?id='.$matches[1].'&grid=data",init_'.$ro.'chartline);
         mygrid.attachEvent("onEditCell",function(stage){
                 if (stage == 2)
                         refresh_chart();

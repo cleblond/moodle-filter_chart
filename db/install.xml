@@ -32,6 +32,11 @@
         <FIELD NAME="xaxistitle" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="yaxistitle" TYPE="char" LENGTH="55" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="chartoptions" TYPE="char" LENGTH="55" NOTNULL="true" DEFAULT="true~false~false~false~false" SEQUENCE="false"/>
+        <FIELD NAME="series1" TYPE="char" LENGTH="55" NOTNULL="true" DEFAULT="Series 1 label" SEQUENCE="false"/>
+        <FIELD NAME="series2" TYPE="char" LENGTH="55" NOTNULL="true" DEFAULT="Series 2 label" SEQUENCE="false"/>
+        <FIELD NAME="series3" TYPE="char" LENGTH="55" NOTNULL="true" DEFAULT="Series 3 label" SEQUENCE="false"/>
+        <FIELD NAME="series4" TYPE="char" LENGTH="55" NOTNULL="true" DEFAULT="Series 4 label" SEQUENCE="false"/>
+        <FIELD NAME="series5" TYPE="char" LENGTH="55" NOTNULL="true" DEFAULT="Series 5 label" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
