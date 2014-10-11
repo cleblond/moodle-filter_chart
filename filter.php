@@ -36,7 +36,7 @@ class filter_chart extends moodle_text_filter {
         $id = 1;
         $newtext = preg_replace_callback($search, function($matches) use (&$id) {
         global $CFG, $DB, $USER;    
-        print_object($matches);
+        //print_object($matches);
         $result = $DB->get_record('filter_chart_users', array('id'=>$matches[1]));
         $hidediv = '';
 
@@ -66,16 +66,16 @@ class filter_chart extends moodle_text_filter {
 			$hidediv = 'style="display: none;"';
 		       //Build up legend text for ro mode
 		       $seriesvisible = explode("~", $result->chartoptions);
-		       print_object($seriesvisible);
+		      //print_object($seriesvisible);
 		       $rolegend="";
 		       for ($i=1; $i<=5; $i++) {
-			    echo $seriesvisible[$i-1];
+			    //echo $seriesvisible[$i-1];
 			    if($seriesvisible[$i-1] == "true") {
 			    $leg = "series".$i;
 			    $rolegend .= '{text:"'.$result->$leg.'",color:"'.$color[$i-1].'"},';
 			    }
 		       }
-		       echo "$rolegend";
+		       //echo "$rolegend";
 			      //add all series text
 		       $addroseries = '';
 		       $j=2;
@@ -96,7 +96,7 @@ class filter_chart extends moodle_text_filter {
 		       }
                        $addseries = $addroseries;
                        $legend = $rolegend;
-		       print_object($addroseries);
+		       //print_object($addroseries);
                        $ro = "ro";
 		
         } else {
@@ -122,8 +122,8 @@ class filter_chart extends moodle_text_filter {
 				});';
 		       $j=$j+2;
 		       }
-		       print_object($addseries);
-
+		       //print_object($addseries);
+//$ro = "ro";
         }
 
         //Take care of pie type graphs.
@@ -197,6 +197,9 @@ class filter_chart extends moodle_text_filter {
         function init_rochart(){
         charttype.parse(mygrid,"dhtmlxgrid");
         }
+        function init_rochartline(){
+        charttype.parse(mygrid,"dhtmlxgrid");
+        }
 
 
 
@@ -204,7 +207,7 @@ class filter_chart extends moodle_text_filter {
         function init_chart(){
           
                /// charttype.clearAll();
-
+                charttype.parse(mygrid,"dhtmlxgrid");
                 //charttype.hideSeries(0);
                 //mygrid.hdr.rows[2].cells[0].firstChild.firstChild.checked = "false";
                 cbxs = "'.$result->chartoptions.'";
@@ -217,6 +220,7 @@ class filter_chart extends moodle_text_filter {
 
 			    //text += cars[i] + "<br>";
                             if (cbx[i]=="false"){
+                              //console.log("init_chart");
                               charttype.hideSeries(i);
                               mygrid.hdr.rows[2].cells[j].firstChild.firstChild.checked = false;
                             }
@@ -224,6 +228,7 @@ class filter_chart extends moodle_text_filter {
 			}
                    }
                  //       charttype.hideSeries(0);
+
         };
 
         function init_chartline(){
@@ -281,11 +286,11 @@ class filter_chart extends moodle_text_filter {
                 var options = "";
                 for (i = 0; i < 5; i++) {
 		options = options + "~" + mygrid.hdr.rows[2].cells[j].firstChild.firstChild.checked;
-                console.log(j);
+                //console.log(j);
                 j = j + 1; 
                 }
                 options=options.substring(1);
-                console.log(options);
+                //console.log(options);
                 myformgrid.cells('.$matches[1].',4).setValue(options);
 		charttype.refresh();
                
@@ -298,8 +303,8 @@ class filter_chart extends moodle_text_filter {
 
 
         function doOnCheckline(rowId,cellInd,state){
-                console.log(myformgrid.cells('.$matches[1].',4).getValue());
-                console.log(rowId+","+cellInd);
+                //console.log(myformgrid.cells('.$matches[1].',4).getValue());
+                //console.log(rowId+","+cellInd);
                 if(state == 0) {
                 charttype.hideSeries(cellInd-1);
                 } else {
@@ -312,11 +317,11 @@ class filter_chart extends moodle_text_filter {
                 var options = "";
                 for (i = 0; i < 5; i++) {
 		options = options + "~" + mygrid.hdr.rows[2].cells[i+1].firstChild.firstChild.checked;
-                console.log(i);
+                //console.log(i);
 
                 }
                 options=options.substring(1);
-                console.log(options);
+                //console.log(options);
                 myformgrid.cells('.$matches[1].',4).setValue(options);
 		//charttype.refresh();
             
@@ -446,7 +451,7 @@ $script = '
 
 
         //OPtions grid.
-        console.log("Right Here");
+        //console.log("Right Here");
         var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
         //myformgrid.setHeader("Type,Title,x-axisTitle,y-axisTitle,chartoptions");
         myformgrid.setInitWidths("75,75,150,150,75");
@@ -586,7 +591,7 @@ $script = '
 
 
         //OPtions grid.
-        console.log("Right Here");
+        //console.log("Right Here");
         var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
         //myformgrid.setHeader("Type,Title,x-axisTitle,y-axisTitle,chartoptions");
         myformgrid.setInitWidths("75,75,150,150,75");
@@ -728,7 +733,7 @@ $script = '
 
 
         //OPtions grid.
-        console.log("Right Here");
+        //console.log("Right Here");
         var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
         //myformgrid.setHeader("Type,Title,x-axisTitle,y-axisTitle,chartoptions");
         myformgrid.setInitWidths("75,75,150,150,75");
@@ -802,7 +807,7 @@ $script = '
         
 
         //OPtions grid.
-        console.log("Right Here");
+        //console.log("Right Here");
         var myformgrid = new dhtmlXGridObject(\'gridboxuser\');
         //myformgrid.setHeader("Type,Title,x-axisTitle,y-axisTitle,chartoptions");
         myformgrid.setInitWidths("75,75,150,150,75");
