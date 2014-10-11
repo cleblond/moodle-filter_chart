@@ -79,14 +79,16 @@ class filter_chart extends moodle_text_filter {
 			      //add all series text
 		       $addroseries = '';
 		       $j=2;
+                   if ($result->type == "scatter") {
 		       for ($i=2; $i<=5; $i++) {
 			    if($seriesvisible[$i-1] == "true") {
 			       $addroseries .= 'charttype.addSeries({
 					xValue: "#data'.$j.'#",
 					value: "#data'.($j+1).'#",
+                                        line:{color:"'.$color[$i-1].'"},
 					item:{
 					radius:3,
-					type:"s",
+				        type:"'.$marker[$i-1].'",
 					borderWidth:2,
 					color:"'.$color[$i-1].'"}
 					});';
@@ -94,6 +96,24 @@ class filter_chart extends moodle_text_filter {
 			    }
 
 		       }
+                  } else {
+		       for ($i=2; $i<=5; $i++) {
+			    if($seriesvisible[$i-1] == "true") {
+			       $addroseries .= 'charttype.addSeries({
+					//xValue: "#data'.$j.'#",
+					value: "#data'.($i).'#",
+                                        line:{color:"'.$color[$i-1].'"},
+					item:{
+					radius:3,
+				        type:"'.$marker[$i-1].'",
+					borderWidth:2,
+					color:"'.$color[$i-1].'"}
+					});';
+			       $j=$j+2;
+			    }
+
+		       }
+                  }
                        $addseries = $addroseries;
                        $legend = $rolegend;
 		       //print_object($addroseries);
@@ -110,18 +130,39 @@ class filter_chart extends moodle_text_filter {
 		       //add all series text
 		       $addseries = '';
 		       $j=2;
+                   if ($result->type == "scatter") {
 		       for ($i=2; $i<=5; $i++) {
 		       $addseries .= 'charttype.addSeries({
 				xValue: "#data'.$j.'#",
 				value: "#data'.($j+1).'#",
+                                line:{color:"'.$color[$i-1].'"},
 				item:{
 				radius:3,
-				type:"s",
+				type:"'.$marker[$i-1].'",
 				borderWidth:2,
 				color:"'.$color[$i-1].'"}
 				});';
 		       $j=$j+2;
 		       }
+                   } else {
+                       for ($i=2; $i<=5; $i++) {
+		       $addseries .= 'charttype.addSeries({
+				//xValue: "#data'.$j.'#",
+				value: "#data'.($i).'#",
+                                line:{color:"'.$color[$i-1].'"},
+				item:{
+				radius:3,
+				type:"'.$marker[$i-1].'",
+				borderWidth:2,
+				color:"'.$color[$i-1].'"}
+				});';
+		       $j=$j+2;
+		       }
+
+                   }
+
+
+
 		       //print_object($addseries);
 //$ro = "ro";
         }
@@ -377,46 +418,6 @@ $script = '
                 border:false
         });
         '.$addseries.'
-     /*  charttype.addSeries({
-                xValue: "#data2#",
-                value: "#data3#",
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:2,
-                color:"yellow"}
-                });
-
-      charttype.addSeries({
-                xValue: "#data4#",
-                value: "#data5#",
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:2,
-                color:"green"}
-                });
-
-      charttype.addSeries({
-                xValue: "#data6#",
-                value: "#data7#",
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:2,
-                color:"blue"}  
-                });
-
-      charttype.addSeries({
-                xValue: "#data8#",
-                value: "#data9#",
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:2,
-                color:"black"}  
-                });
-        */
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
         mygrid.setHeader("x1,y1,x2,y2,x3,y3,x4,y4,x5,y5");
         mygrid.setInitWidths("75,75,75,75,75,75,75,75,75,75");
@@ -504,6 +505,7 @@ $script = '
 			valign:"middle",
 			width:120,
 			toggle:true,
+                        marker:{type: "item"},
 			values:['.$legend.']},  
               /*  tooltip:{
                   template:"(#data0# , #data1#)"
@@ -511,57 +513,7 @@ $script = '
                 border:false
         });
 
-       charttype.addSeries({
-                //xValue: "#data0#",
-                value: "#data2#",
-                line:{
-                     color:"yellow",
-                },
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:1,
-                color:"yellow"}
-                });
-
-      charttype.addSeries({
-                //xValue: "#data0#",
-                value: "#data3#",
-                line:{
-                color:"green",
-                },
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:1,
-                color:"green"}
-                });
-
-      charttype.addSeries({
-                //xValue: "#data0#",
-                value: "#data4#",
-                line:{
-                color:"blue",
-                },
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:1,
-                color:"blue"}  
-                });
-
-      charttype.addSeries({
-                //xValue: "#data0#",
-                value: "#data5#",
-                line:{
-                color:"black",
-                },
-                item:{
-                radius:3,
-                type:"s",
-                borderWidth:1,
-                color:"black"}  
-                });
+        '.$addseries.'
 
         //var charttype = chartscatter;
 
