@@ -32,24 +32,15 @@ class filter_chart extends moodle_text_filter {
 
     public function filter($text, array $options = array()) {
         global $CFG, $USER;
-        $search = '/<div.*?class="eo_chart".*?chart="(.*?)".*?type="(.*?)".*?group="(.*?)".*?readonly="(.*?)".*?uid="(.*?)"><\/div>/';
+       // $search = '/<div.*?class="eo_chart".*?chart="(.*?)".*?type="(.*?)".*?group="(.*?)".*?readonly="(.*?)".*?uid="(.*?)"><\/div>/';
+
+        $search = '/<div.*?class="eo_chart".*?chart="(.*?)".*?type="(.*?)"><\/div>/';
         $id = 1;
         $newtext = preg_replace_callback($search, function($matches) use (&$id) {
         global $CFG, $DB, $USER;    
         //print_object($matches);
         $result = $DB->get_record('filter_chart_users', array('id'=>$matches[1]));
         $hidediv = '';
-
-
-
-
-
-
-
-
-
-
-
 
 //       echo $legend;
 //                        {text:"<span style=\'font-size: 8pt;\'>Series 1</span>",color:"red"},
@@ -160,8 +151,6 @@ class filter_chart extends moodle_text_filter {
 		       }
 
                    }
-
-
 
 		       //print_object($addseries);
 //$ro = "ro";
@@ -788,11 +777,6 @@ $script = '
 
         break;
 }
-
-
-
-
-
 
 
             return $pre.$script;
