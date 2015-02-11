@@ -1,4 +1,4 @@
- <?php
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -220,7 +220,6 @@ class filter_chart extends moodle_text_filter {
         <div id="chartoptions" >
         <input type="button" name="some_name" value="Save" onclick="myDataProcessor.sendData();myDataProcessorFG.sendData();">
         <table>
-        
         <tr><td><div id="gridboxuser" style="width:600px; height:95px; background-color:white; float:left;"></div></td></tr>
         <tr><td><div id="gridboxdata" style="width:600px; height:170px; background-color:white; float:left;"></div></td></tr>
         </table>
@@ -233,7 +232,6 @@ class filter_chart extends moodle_text_filter {
         Y.delegate(\'click\', function(e) {
         var buttonID = e.currentTarget.get(\'id\'),
             node = Y.one(\'#chartoptions\');
-            
         if (buttonID === \'show\') {
             node.show();
         } else if (buttonID === \'hide\') {
@@ -241,7 +239,6 @@ class filter_chart extends moodle_text_filter {
         } else if (buttonID === \'toggle\') {
             node.toggleView();
         }
-
         }, document, \'button\');
     });
     </script>
@@ -253,16 +250,12 @@ class filter_chart extends moodle_text_filter {
 
                         //charttype.hideSeries(0);
         };
-        
         function init_rochart(){
         charttype.parse(mygrid,"dhtmlxgrid");
         }
         function init_rochartline(){
         charttype.parse(mygrid,"dhtmlxgrid");
         }
-
-
-
 
         function init_chart(){
                 charttype.parse(mygrid,"dhtmlxgrid");
@@ -271,7 +264,6 @@ class filter_chart extends moodle_text_filter {
                 cbxs = "' . $result->chartoptions . '";
                 cbx = cbxs.split("~");
                 //console.log(cbx);
-              
                    if ("' . $linetype . '" == "line"){
                         j = 0;
             for (i = 0; i < cbx.length; i++) {
@@ -307,8 +299,6 @@ class filter_chart extends moodle_text_filter {
             }
         };
 
-
-        
         function doOnColorChanged(stage,rId,cIn){
                 //console.log("HERERERE");
                 if(stage==2){
@@ -336,13 +326,12 @@ class filter_chart extends moodle_text_filter {
                 for (i = 0; i < 5; i++) {
         options = options + "~" + mygrid.hdr.rows[2].cells[j].firstChild.firstChild.checked;
                 //console.log(j);
-                j = j + 1; 
+                j = j + 1;
                 }
                 options=options.substring(1);
                 //console.log(options);
                 myformgrid.cells(' . $matches[1] . ',4).setValue(options);
         charttype.refresh();
-              
 
                 myDataProcessorFG.setUpdated(' . $matches[1] . ',"updated");
                 myDataProcessorFG.sendData();
@@ -373,7 +362,6 @@ class filter_chart extends moodle_text_filter {
                 //console.log(options);
                 myformgrid.cells(' . $matches[1] . ',4).setValue(options);
         //charttype.refresh();
-            
                 myDataProcessorFG.setUpdated(' . $matches[1] . ',"updated");
                 myDataProcessorFG.sendData();
 
@@ -403,7 +391,7 @@ class filter_chart extends moodle_text_filter {
                          marker:{
                         type: "item"
                         },
-            values:[' . $legend . ']},  
+            values:[' . $legend . ']},
                 item:{
                    radius:5,
                   // borderColor:"red",
@@ -411,7 +399,7 @@ class filter_chart extends moodle_text_filter {
                    color:"red",
                    type:"d",
                    shadow:true
-                }, 
+                },
                 tooltip:{
                   template:"(#data0# , #data1#)"
                 },
@@ -462,7 +450,7 @@ class filter_chart extends moodle_text_filter {
         myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
         myDataProcessorFG.setUpdateMode("off"); //disable auto-update
         myDataProcessorFG.init(myformgrid); //link dataprocessor to the grid
-//    }    ///end window.onload 
+//    }    ///end window.onload
     });   //end Y.use
 </script>';
                 break;
@@ -498,7 +486,7 @@ class filter_chart extends moodle_text_filter {
             width:120,
             toggle:true,
                         marker:{type: "item"},
-            values:[' . $legend . ']},  
+            values:[' . $legend . ']},
               /*  tooltip:{
                   template:"(#data0# , #data1#)"
                 }, */
@@ -546,12 +534,11 @@ class filter_chart extends moodle_text_filter {
                         //console.log(charttype._configXAxis.title);
             //chart.clearAll();
             //chart.load("/data/test.json","json");
-            //setTimeout(refreshchart,60000);  
+            //setTimeout(refreshchart,60000);
             //charttype._configXAxis.title = "NEW AXIS TITLE";
                         //charttype.clearAll();
                         //charttype.refresh();
             //console.log(charttype._configXAxis.title);
-                        
 
                         //xtit = charttype.update(123, { text:"abc", value:22 });
                         //alert(charttype.parse(myformgrid,"dhtmlxgrid"));
@@ -569,7 +556,7 @@ class filter_chart extends moodle_text_filter {
         myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
         myDataProcessorFG.setUpdateMode("off"); //disable auto-update
         myDataProcessorFG.init(myformgrid); //link dataprocessor to the grid
-//    }    ///end window.onload 
+//    }    ///end window.onload
     });   //end Y.use
 </script>';
                 break;
@@ -737,4 +724,4 @@ class filter_chart extends moodle_text_filter {
         //print_object($pre.$script);
         return $pre . $script;
     } ///end callback
-} 
+}
