@@ -77,6 +77,7 @@ class filter_chart extends moodle_text_filter {
             'id' => $matches[1]
         ));
         $hidediv = '';
+        $readonly = true;
         $color   = array(
             "red",
             "yellow",
@@ -93,10 +94,11 @@ class filter_chart extends moodle_text_filter {
         );
         $ro      = "";
         ///don't allow editing, add legend and hide the options and data grids if not creator
+            $seriesvisible = explode("~", $result->chartoptions);
         if ($USER->id !== $result->userid) {
             $hidediv       = 'style="display: none;"';
             //Build up legend text for ro mode
-            $seriesvisible = explode("~", $result->chartoptions);
+
             $rolegend      = "";
             for ($i = 1; $i <= 5; $i++) {
                 //echo $seriesvisible[$i-1];
@@ -146,11 +148,16 @@ class filter_chart extends moodle_text_filter {
             $ro        = "ro";
         } else {
             //Build up legend text all curves
+            $readonly = false;
             $legend = "";
             for ($i = 1; $i <= 5; $i++) {
+                if ($seriesvisible[$i - 1] == "true") {
                 $leg = "series" . $i;
                 $legend .= '{text:"' . $result->$leg . '",color:"' . $color[$i - 1] . '"},';
+                }
             }
+            $legend = rtrim($legend, ",");
+            //echo $legend;
             //add all series text
             $addseries = '';
             $j         = 2;
@@ -212,38 +219,57 @@ class filter_chart extends moodle_text_filter {
         if (in_array($result->type, $linetypes)) {
             $linetype = "line";
         }
-        $pre = '       <table>
-        <tr><td style="text-align: center;"><b>' . $result->title . '</b></td></tr>
-        <tr><td><div id="chart_container" style="width:600px;height:300px;"></div></td></tr></table>
-        <div ' . $hidediv . '>
-        <button id="toggle" >Show/Hide</button><br>
-        <div id="chartoptions" >
-        <input type="button" name="some_name" value="Save" onclick="myDataProcessor.sendData();myDataProcessorFG.sendData();">
-        <table>
-        <tr><td><div id="gridboxuser" style="width:600px; height:95px; background-color:white; float:left;"></div></td></tr>
-        <tr><td><div id="gridboxdata" style="width:600px; height:170px; background-color:white; float:left;"></div></td></tr>
-        </table>
-        <p><a href="javascript:void(0)" onclick="mygrid.addRow((new Date()).valueOf(),[\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\'],mygrid.getRowIndex(mygrid.getSelectedId())+1)">Add row</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="mygrid.deleteSelectedItem()">Remove Selected Row</a></p>
-        <input type="button" name="some_name" value="Save" onclick="myDataProcessor.sendData();myDataProcessorFG.sendData();">
-        </div>
-        </div>
-        <script type="text/javascript">
-    YUI().use(\'node\', function(Y) {
-        Y.delegate(\'click\', function(e) {
-        var buttonID = e.currentTarget.get(\'id\'),
-            node = Y.one(\'#chartoptions\');
-        if (buttonID === \'show\') {
-            node.show();
-        } else if (buttonID === \'hide\') {
-            node.hide();
-        } else if (buttonID === \'toggle\') {
-            node.toggleView();
-        }
-        }, document, \'button\');
+
+$test = "
+<script>
+YUI().use('tabview', function(Y) {
+    var tabview = new Y.TabView({
+        srcNode: '#demo'
     });
-    </script>
+
+    tabview.render();
+});
+</script>";
+
+
+
+        $pre = $result->title . '
+        <div id="chart_container" style="width:600px;height:300px;"></div>
+        <div '.$hidediv.'>
+        <div id="demo">
+	    <ul style = "border-style: none;">
+		<li><a href="#options">Chart Options</a></li>
+		<li><a href="#data">Data</a></li>
+	    </ul>
+
+            <div style="width:605px; height:200px;">
+            <div id="options"><div id="gridboxuser" style="width:600px; height:95px; background-color:white; float:left;"><p> here </p></div></div>
+            <div id="data"><div id="gridboxdata" style="width:600px; height:170px; background-color:white; float:left;"></div>
+            <p><a id="addrow" href="javascript:void(0)">Add row</a>&nbsp;&nbsp;<a id="deleterow" href="javascript:void(0)">Remove Selected Row</a></p>
+            </div>
+            </div>
+        </div>
+        <input type="button" id="savedata" value="Save"/>
+        </div>
         <script>
     YUI().use(\'node\', \'dhtmlxcommon\', \'dhtmlxchart\', \'dhtmlxgrid\', function(Y) {
+
+        // Handle add/delete rows and save data events.
+        var addrowinput = Y.one(\'#addrow\');
+        addrowinput.on(\'click\', function() {
+        mygrid.addRow((new Date()).valueOf(),[\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\'],mygrid.getRowIndex(mygrid.getSelectedId())+1);
+        });
+
+        var deleterowinput = Y.one(\'#deleterow\');
+        deleterowinput.on(\'click\', function() {
+        mygrid.deleteSelectedItem();
+        });
+
+        var saveinput = Y.one(\'#savedata\');
+        saveinput.on(\'click\', function() {
+        myDataProcessor.sendData();myDataProcessorFG.sendData();
+        });
+
         function refresh_chart(){
                 charttype.clearAll();
                 charttype.parse(mygrid,"dhtmlxgrid");
@@ -383,27 +409,25 @@ class filter_chart extends moodle_text_filter {
                 title:"' . $result->xaxistitle . '",
                 },
                 legend:{
-            layout:"y",
-            align:"right",
-            valign:"middle",
-            width:120,
-            toggle:true,
-                         marker:{
-                        type: "item"
-                        },
-            values:[' . $legend . ']},
-                item:{
-                   radius:5,
-                  // borderColor:"red",
-                   borderWidth:1,
-                   color:"red",
-                   type:"d",
-                   shadow:true
-                },
-                tooltip:{
+                    layout:"y",
+                    align:"right",
+                    valign:"middle",
+                    width:120,
+                   // toggle:true,
+                    marker:{ type: "item"},
+                    values:[' . $legend . ']},
+                    item:{
+                       radius:4,
+                       // borderColor:"red",
+                       borderWidth:1,
+                       color:"red",
+                       type:"d",
+                       shadow:true
+                    },
+               /* tooltip:{
                   template:"(#data0# , #data1#)"
-                },
-                border:false
+                }, */
+                    border:false
         });
         ' . $addseries . '
         mygrid = new dhtmlXGridObject(\'gridboxdata\');
@@ -439,20 +463,23 @@ class filter_chart extends moodle_text_filter {
         myformgrid.setInitWidths("75,75,150,150,75");
         myformgrid.setSkin("dhx_skyblue");
         myformgrid.init();
-        myformgrid.loadXML("' . $CFG->wwwroot . '/filter/chart/get.php?id=' . $matches[1] . '&grid=user");
+        myformgrid.loadXML("' . $CFG->wwwroot . '/filter/chart/get.php?id=' . $matches[1] . '&grid=user");';
 
-        myDataProcessor = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/update.php?chartid=' . $matches[1] . '"); //lock feed url
-        myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
-        myDataProcessor.setUpdateMode("off"); //disable auto-update
-        myDataProcessor.init(mygrid); //link dataprocessor to the grid
+        if($readonly == false) {
+        	$script .= '
+		myDataProcessor = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/update.php?chartid=' . $matches[1] . '"); //lock feed url
+		myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
+		myDataProcessor.setUpdateMode("off"); //disable auto-update
+		myDataProcessor.init(mygrid); //link dataprocessor to the grid
+		myDataProcessorFG = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/updateform.php?chartid=' . $matches[1] . '"); //lock feed url
+		myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
+		myDataProcessorFG.setUpdateMode("off"); //disable auto-update
+		myDataProcessorFG.init(myformgrid);';
+         }
+         $endscript = '});</script>';
+         $script = $script . $endscript;
 
-        myDataProcessorFG = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/updateform.php?chartid=' . $matches[1] . '"); //lock feed url
-        myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
-        myDataProcessorFG.setUpdateMode("off"); //disable auto-update
-        myDataProcessorFG.init(myformgrid); //link dataprocessor to the grid
-//    }    ///end window.onload
-    });   //end Y.use
-</script>';
+
                 break;
             case "line":
             case "spline":
@@ -523,42 +550,22 @@ class filter_chart extends moodle_text_filter {
         myformgrid.setInitWidths("75,75,150,150,75");
         myformgrid.setSkin("dhx_skyblue");
         myformgrid.init();
-        myformgrid.loadXML("' . $CFG->wwwroot . '/filter/chart/get.php?id=' . $matches[1] . '&grid=user");
-       /*
-        myformgrid.attachEvent("onEditCell",function(stage){
-                if (stage == 2) {
-                        //charttype.parse(myformgrid,"dhtmlxgrid");
-                        //xtit = myformgrid.cells2(0,2).getValue();
-                        //alert(xtit);
-                        //console.log(charttype);
-                        //console.log(charttype._configXAxis.title);
-            //chart.clearAll();
-            //chart.load("/data/test.json","json");
-            //setTimeout(refreshchart,60000);
-            //charttype._configXAxis.title = "NEW AXIS TITLE";
-                        //charttype.clearAll();
-                        //charttype.refresh();
-            //console.log(charttype._configXAxis.title);
+        myformgrid.loadXML("' . $CFG->wwwroot . '/filter/chart/get.php?id=' . $matches[1] . '&grid=user");';
 
-                        //xtit = charttype.update(123, { text:"abc", value:22 });
-                        //alert(charttype.parse(myformgrid,"dhtmlxgrid"));
-                        //refresh_chart();
-                }
-                return true;
-        }); */
+        if($readonly == false) {
+        	$script .= '
+		myDataProcessor = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/update.php?chartid=' . $matches[1] . '"); //lock feed url
+		myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
+		myDataProcessor.setUpdateMode("off"); //disable auto-update
+		myDataProcessor.init(mygrid); //link dataprocessor to the grid
+		myDataProcessorFG = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/updateform.php?chartid=' . $matches[1] . '"); //lock feed url
+		myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
+		myDataProcessorFG.setUpdateMode("off"); //disable auto-update
+		myDataProcessorFG.init(myformgrid);';
+         }
+         $endscript = '});</script>';
+         $script = $script . $endscript;
 
-        myDataProcessor = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/update.php?chartid=' . $matches[1] . '"); //lock feed url
-        myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
-        myDataProcessor.setUpdateMode("off"); //disable auto-update
-        myDataProcessor.init(mygrid); //link dataprocessor to the grid
-
-        myDataProcessorFG = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/updateform.php?chartid=' . $matches[1] . '"); //lock feed url
-        myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
-        myDataProcessorFG.setUpdateMode("off"); //disable auto-update
-        myDataProcessorFG.init(myformgrid); //link dataprocessor to the grid
-//    }    ///end window.onload
-    });   //end Y.use
-</script>';
                 break;
             case "barH";
             case "bar":
@@ -649,21 +656,22 @@ class filter_chart extends moodle_text_filter {
         myformgrid.setInitWidths("75,75,150,150,75");
         myformgrid.setSkin("dhx_skyblue");
         myformgrid.init();
-        myformgrid.loadXML("' . $CFG->wwwroot . '/filter/chart/get.php?id=' . $matches[1] . '&grid=user");
+        myformgrid.loadXML("' . $CFG->wwwroot . '/filter/chart/get.php?id=' . $matches[1] . '&grid=user");';
 
-        myDataProcessor = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/update.php?chartid=' . $matches[1] . '"); //lock feed url
-        myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
-        myDataProcessor.setUpdateMode("off"); //disable auto-update
-        myDataProcessor.init(mygrid); //link dataprocessor to the grid
+        if($readonly == false) {
+        	$script .= '
+		myDataProcessor = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/update.php?chartid=' . $matches[1] . '"); //lock feed url
+		myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
+		myDataProcessor.setUpdateMode("off"); //disable auto-update
+		myDataProcessor.init(mygrid); //link dataprocessor to the grid
+		myDataProcessorFG = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/updateform.php?chartid=' . $matches[1] . '"); //lock feed url
+		myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
+		myDataProcessorFG.setUpdateMode("off"); //disable auto-update
+		myDataProcessorFG.init(myformgrid);';
+         }
+         $endscript = '});</script>';
+         $script = $script . $endscript;
 
-        myDataProcessorFG = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/updateform.php?chartid=' . $matches[1] . '"); //lock feed url
-        myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
-        myDataProcessorFG.setUpdateMode("off"); //disable auto-update
-        myDataProcessorFG.init(myformgrid); //link dataprocessor to the grid
-//    }    ///end window.onload
-    });   //end Y.use
-
-</script>';
                 break;
             case "pie3D";
             case "donut";
@@ -705,23 +713,24 @@ class filter_chart extends moodle_text_filter {
         myformgrid.setInitWidths("75,75,150,150,75");
         myformgrid.setSkin("dhx_skyblue");
         myformgrid.init();
-        myformgrid.loadXML("' . $CFG->wwwroot . '/filter/chart/get.php?id=' . $matches[1] . '&grid=user");
+        myformgrid.loadXML("' . $CFG->wwwroot . '/filter/chart/get.php?id=' . $matches[1] . '&grid=user");';
 
-        myDataProcessor = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/update.php?chartid=' . $matches[1] . '"); //lock feed url
-        myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
-        myDataProcessor.setUpdateMode("off"); //disable auto-update
-        myDataProcessor.init(mygrid); //link dataprocessor to the grid
-
-        myDataProcessorFG = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/updateform.php?chartid=' . $matches[1] . '"); //lock feed url
-        myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
-        myDataProcessorFG.setUpdateMode("off"); //disable auto-update
-        myDataProcessorFG.init(myformgrid); //link dataprocessor to the grid
-    //});    ///end Y.on(load)
-    });   //end Y.use
-</script>';
+        if($readonly == false) {
+        	$script .= '
+		myDataProcessor = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/update.php?chartid=' . $matches[1] . '"); //lock feed url
+		myDataProcessor.setTransactionMode("POST",true); //set mode as send-all-by-post
+		myDataProcessor.setUpdateMode("off"); //disable auto-update
+		myDataProcessor.init(mygrid); //link dataprocessor to the grid
+		myDataProcessorFG = new dataProcessor("' . $CFG->wwwroot . '/filter/chart/updateform.php?chartid=' . $matches[1] . '"); //lock feed url
+		myDataProcessorFG.setTransactionMode("POST",true); //set mode as send-all-by-post
+		myDataProcessorFG.setUpdateMode("off"); //disable auto-update
+		myDataProcessorFG.init(myformgrid); ';
+         }
+         $endscript = '});</script>';
+         $script = $script . $endscript;
                 break;
         }
         //print_object($pre.$script);
-        return $pre . $script;
+        return $pre . $script. $test;
     } ///end callback
 }
