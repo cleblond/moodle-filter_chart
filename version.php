@@ -29,4 +29,4 @@ $plugin->version   = 2015020700;    // The current plugin version (Date: YYYYMMD
 $plugin->requires  = 2012062500;    // Requires this Moodle version
 $plugin->component = 'filter_chart'; // Full name of the plugin (used for diagnostics)
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release = '1.1 (Build: 2014083100)'; 
+$plugin->release = '1.0'; 
