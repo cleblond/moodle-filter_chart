@@ -34,16 +34,20 @@ class filter_chart extends moodle_text_filter {
      */
     public function filter($text, array $options = array()) {
         global $CFG, $PAGE, $chartconfigured;
-        $search  = '/<div.*?class="eo_chart (.*?)".*?<\/div>/';
+        $search  = '/<div class="eo_chart (.*?)".*?<\/div>/';
         $pattern = '/.*?spreadsheet.php\.*?/';
+        $pattern2 = '/.*?eo_spreadsheet\.*?/';
         $newtext = preg_replace_callback($search, array(
             $this,
             'filter_chart_callback'
         ), $text);
+        //print_object($text);
+        //print_object($newtext);
         if (($newtext != $text) && !isset($chartconfigured)) {
             //echo "filter_chart";
             $chartconfigured = true;
             $css             = '<link rel="stylesheet" href="' . $CFG->wwwroot . '/filter/chart/codebase/dhtmlx.css">';
+            //$css = '';
             $dhtmlxmods      = "<script type='text/javascript'>
             //Y.on('load', function () {
             YUI().applyConfig({
@@ -54,7 +58,8 @@ class filter_chart extends moodle_text_filter {
                     'dhtmlxchart': {
                     fullpath: M.cfg.wwwroot + '/filter/chart/codebase/dhtmlxchart.js'
                     },";
-            if (!preg_match($pattern, $text)) {
+            echo "preg_match =". preg_match($pattern2, $text);
+            if (!preg_match($pattern2, $text)) {
                 $dhtmlxmods .= "'dhtmlxgrid': {
                 fullpath: M.cfg.wwwroot + '/filter/chart/codebase/dhtmlxgrid.js'
                 },";
