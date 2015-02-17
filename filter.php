@@ -41,16 +41,15 @@ class filter_chart extends moodle_text_filter {
             $this,
             'filter_chart_callback'
         ), $text);
-        //print_object($text);
-        //print_object($newtext);
         if (($newtext != $text) && !isset($chartconfigured)) {
+      
             //echo "filter_chart";
             $chartconfigured = true;
             $css             = '<link rel="stylesheet" href="' . $CFG->wwwroot . '/filter/chart/codebase/dhtmlx.css">';
             //$css = '';
             $dhtmlxmods      = "<script type='text/javascript'>
             //Y.on('load', function () {
-            YUI().applyConfig({
+            YUI({
                 modules: {
                     'dhtmlxcommon': {
                     fullpath: M.cfg.wwwroot + '/filter/chart/codebase/dhtmlxcommon.js'
@@ -58,7 +57,7 @@ class filter_chart extends moodle_text_filter {
                     'dhtmlxchart': {
                     fullpath: M.cfg.wwwroot + '/filter/chart/codebase/dhtmlxchart.js'
                     },";
-            echo "preg_match =". preg_match($pattern2, $text);
+            //echo "preg_match =". preg_match($pattern2, $text);
             if (!preg_match($pattern2, $text)) {
                 $dhtmlxmods .= "'dhtmlxgrid': {
                 fullpath: M.cfg.wwwroot + '/filter/chart/codebase/dhtmlxgrid.js'
@@ -72,6 +71,15 @@ class filter_chart extends moodle_text_filter {
             });
          //});
         </script>";
+
+         $css = "<script type='text/javascript'>Y.Get.css(M.cfg.wwwroot + '/filter/chart/codebase/dhtmlx.css', function (err) {
+                  if (err) {
+        Y.log('Error loading CSS: ' + err[0].error, 'error');
+        return;
+    }
+    Y.log('file.css loaded successfully!');
+});</script>";
+
             $newtext = $css . $dhtmlxmods . $newtext;
         }
         return $newtext;
@@ -162,8 +170,7 @@ class filter_chart extends moodle_text_filter {
                 }
             }
             $legend = rtrim($legend, ",");
-            //echo $legend;
-            //add all series text
+
             $addseries = '';
             $j         = 2;
             if ($result->type == "scatter") {
@@ -735,7 +742,6 @@ YUI().use('tabview', function(Y) {
          $script = $script . $endscript;
                 break;
         }
-        //print_object($pre.$script);
         return $pre . $script. $test;
     } ///end callback
 }
