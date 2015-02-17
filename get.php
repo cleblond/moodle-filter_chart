@@ -10,21 +10,13 @@ require_once($CFG->libdir . '/filelib.php');
 $id  = optional_param('id', 0, PARAM_INT);
 $grid  = optional_param('grid', '', PARAM_ALPHA);
 
-error_reporting(E_ALL ^ E_NOTICE);
-
-//include db connection settings
-//change this setting according to your environment
-//require_once('../../common/config.php');
-//require_once('../../common/config_dp.php');
+//error_reporting(E_ALL ^ E_NOTICE);
 
 //include XML Header (as response will be in xml format)
 header("Content-type: text/xml");
 //encoding may be different in your case
 echo('<?xml version="1.0" encoding="utf-8"?>'); 
 
-//start output of data
-//print_r($points[1]);
-//print_r($points[2]);
 echo '<rows id="0">';
 
 //output data from DB as XML
@@ -53,9 +45,6 @@ if ($grid == 'data') {
         }
 } else {
         $points = $DB->get_records('filter_chart_users', array('id'=>$id));
-        //$res = mysql_query ($sql);
-        //print_r($points);
-                
 
             echo ('<head>');
             echo ('<column type="co"> Chart type');
@@ -81,7 +70,6 @@ if ($grid == 'data') {
         echo ('</column>');
 echo ('</head>');
 
-
         if($points){
                 foreach ($points as $point) {
                         //create xml tag for grid's row
@@ -90,8 +78,6 @@ echo ('</head>');
                         print("<cell><![CDATA[".$point->title."]]></cell>");
                         print("<cell><![CDATA[".$point->xaxistitle."]]></cell>");
                         print("<cell><![CDATA[".$point->yaxistitle."]]></cell>");
-                        //$options = explode(":" , $point->options);
-                        //print_r($options);
                         print("<cell><![CDATA[".$point->chartoptions."]]></cell>");
                         print("</row>");
                         if ($point->type == "spline" || $point->type == "line"  || $point->type == "scatter"){
@@ -114,6 +100,3 @@ echo ('</head>');
 
 echo '</rows>';
 
-
-
-?>

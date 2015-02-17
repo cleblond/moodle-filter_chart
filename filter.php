@@ -269,7 +269,7 @@ YUI().use('tabview', function(Y) {
         // Handle add/delete rows and save data events.
         var addrowinput = Y.one(\'#addrow\');
         addrowinput.on(\'click\', function() {
-        mygrid.addRow((new Date()).valueOf(),[\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\'],mygrid.getRowIndex(mygrid.getSelectedId())+1);
+        mygrid.addRow(Date().valueOf(),[],mygrid.getRowIndex(mygrid.getSelectedId()));
         });
 
         var deleterowinput = Y.one(\'#deleterow\');
@@ -457,10 +457,10 @@ YUI().use('tabview', function(Y) {
         mygrid.setImagePath(\'' . $CFG->wwwroot . '/filter/chart/codebase/imgs/\');
         mygrid.setSkin("dhx_skyblue");
 
-        mygrid.enableSmartRendering(true);
+        //mygrid.enableSmartRendering(true);
         mygrid.attachEvent("customMasterChecked", doOnCheck);
         mygrid.enableMultiselect(true);
-        mygrid.enableBlockSelection(true);
+        mygrid.enableBlockSelection(false);
         mygrid.forceLabelSelection(true);
 
         mygrid.init();
@@ -545,7 +545,7 @@ YUI().use('tabview', function(Y) {
         mygrid.checkAll(true);
         mygrid.setImagePath(\'' . $CFG->wwwroot . '/filter/chart/codebase/imgs/\');
         mygrid.setSkin("dhx_skyblue");
-        mygrid.enableSmartRendering(true);
+        //mygrid.enableSmartRendering(true);
         mygrid.attachEvent("customMasterChecked", doOnCheckline);
         mygrid.enableMultiselect(true);
         mygrid.enableBlockSelection(true);
@@ -651,7 +651,7 @@ YUI().use('tabview', function(Y) {
         mygrid.setColSorting("str,str,str,str")
         mygrid.setSkin("dhx_skyblue");
 
-        mygrid.enableSmartRendering(true);
+        //mygrid.enableSmartRendering(true);
         mygrid.enableMultiselect(true);
         mygrid.enableBlockSelection(true);
         mygrid.forceLabelSelection(true);
