@@ -269,7 +269,8 @@ YUI().use('tabview', function(Y) {
         // Handle add/delete rows and save data events.
         var addrowinput = Y.one(\'#addrow\');
         addrowinput.on(\'click\', function() {
-        mygrid.addRow(Date().valueOf(),[],mygrid.getRowIndex(mygrid.getSelectedId()));
+        var newId = (new Date()).valueOf();
+        mygrid.addRow(newId,[],mygrid.getRowIndex(mygrid.getSelectedId()));
         });
 
         var deleterowinput = Y.one(\'#deleterow\');
@@ -279,7 +280,8 @@ YUI().use('tabview', function(Y) {
 
         var saveinput = Y.one(\'#savedata\');
         saveinput.on(\'click\', function() {
-        myDataProcessor.sendData();myDataProcessorFG.sendData();
+        myDataProcessor.sendData();
+        myDataProcessorFG.sendData();
         });
 
         function refresh_chart(){

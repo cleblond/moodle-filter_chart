@@ -24,16 +24,16 @@ function add_row($rowId, $chartid){
 		$record = new stdClass();
 		//$record->id = $id;
 		$record->chartid = $chartid;
-		$record->x1 = optional_param($rowId."_c0", 0, PARAM_TEXT);
-		$record->y1 = optional_param($rowId."_c1", 0, PARAM_TEXT);
-		$record->x2 = optional_param($rowId."_c2", 0, PARAM_TEXT);
-		$record->y2 = optional_param($rowId."_c3", 0, PARAM_TEXT);
-		$record->x3 = optional_param($rowId."_c4", 0, PARAM_TEXT);
-		$record->y3 = optional_param($rowId."_c5", 0, PARAM_TEXT);
-		$record->x4 = optional_param($rowId."_c6", 0, PARAM_TEXT);
-		$record->y4 = optional_param($rowId."_c7", 0, PARAM_TEXT);
-		$record->x5 = optional_param($rowId."_c8", 0, PARAM_TEXT);
-		$record->y5 = optional_param($rowId."_c9", 0, PARAM_TEXT);
+		$record->x1 = optional_param($rowId."_c0", NULL, PARAM_TEXT);
+		$record->y1 = optional_param($rowId."_c1", NULL, PARAM_TEXT);
+		$record->x2 = optional_param($rowId."_c2", NULL, PARAM_TEXT);
+		$record->y2 = optional_param($rowId."_c3", NULL, PARAM_TEXT);
+		$record->x3 = optional_param($rowId."_c4", NULL, PARAM_TEXT);
+		$record->y3 = optional_param($rowId."_c5", NULL, PARAM_TEXT);
+		$record->x4 = optional_param($rowId."_c6", NULL, PARAM_TEXT);
+		$record->y4 = optional_param($rowId."_c7", NULL, PARAM_TEXT);
+		$record->x5 = optional_param($rowId."_c8", NULL, PARAM_TEXT);
+		$record->y5 = optional_param($rowId."_c9", NULL, PARAM_TEXT);
                 $newid = $DB->insert_record('filter_chart_data', $record, true);
 
 
@@ -61,16 +61,16 @@ function update_row($rowId, $chartid){
 		//$record->id = $id;
                 $record->id = $rowId;
 		$record->chartid = $chartid;
-		$record->x1 = optional_param($rowId."_c0", '', PARAM_TEXT);
-		$record->y1 = optional_param($rowId."_c1", '', PARAM_TEXT);
-		$record->x2 = optional_param($rowId."_c2", '', PARAM_TEXT);
-		$record->y2 = optional_param($rowId."_c3", '', PARAM_TEXT);
-		$record->x3 = optional_param($rowId."_c4", '', PARAM_TEXT);
-		$record->y3 = optional_param($rowId."_c5", '', PARAM_TEXT);
-		$record->x4 = optional_param($rowId."_c6", '', PARAM_TEXT);
-		$record->y4 = optional_param($rowId."_c7", '', PARAM_TEXT);
-		$record->x5 = optional_param($rowId."_c8", '', PARAM_TEXT);
-		$record->y5 = optional_param($rowId."_c9", '', PARAM_TEXT); 
+		$record->x1 = optional_param($rowId."_c0", NULL, PARAM_TEXT);
+		$record->y1 = optional_param($rowId."_c1", NULL, PARAM_TEXT);
+		$record->x2 = optional_param($rowId."_c2", NULL, PARAM_TEXT);
+		$record->y2 = optional_param($rowId."_c3", NULL, PARAM_TEXT);
+		$record->x3 = optional_param($rowId."_c4", NULL, PARAM_TEXT);
+		$record->y3 = optional_param($rowId."_c5", NULL, PARAM_TEXT);
+		$record->x4 = optional_param($rowId."_c6", NULL, PARAM_TEXT);
+		$record->y4 = optional_param($rowId."_c7", NULL, PARAM_TEXT);
+		$record->x5 = optional_param($rowId."_c8", NULL, PARAM_TEXT);
+		$record->y5 = optional_param($rowId."_c9", NULL, PARAM_TEXT); 
                 //print_r($record);
 
                 //$DB->insert_record('filter_chart_data', $record, true);
